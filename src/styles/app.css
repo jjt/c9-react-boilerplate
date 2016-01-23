@@ -1,0 +1,15 @@
+/* Base Application Styles */
+
+.app {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.todo-item {
+  padding: 0.4em 0;
+  cursor: pointer;
+}
+
+.todo-item.done {
+  text-decoration: line-through;
+}

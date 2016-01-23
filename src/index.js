@@ -1,5 +1,7 @@
 import React from 'react';
-import { render } from 'react-dom';
-import { App } from './App';
+import ReactDOM from 'react-dom';
 
-render(<App />, document.getElementById('root'));
+import App from './components/app';
+
+// Render the main component into the dom
+ReactDOM.render(<App />, document.getElementById('app'));
