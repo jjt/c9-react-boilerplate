@@ -12,11 +12,11 @@ export default React.createClass({
     return {
       todos: [
         {
-          task: 'Write a workshop on React.js',
+          task: 'Forget to write a React workshop',
           done: false
         },
         {
-          task: 'Enter example todos',
+          task: 'Barf a bit',
           done: true
         }
       ]
@@ -46,7 +46,7 @@ export default React.createClass({
   render: function () {
     return (
       <div className="app">
-        <AppHeader title="JJT's Todos" tagline="Get 'em todone"/>
+        <AppHeader title="TODON'T" tagline="A BUCKET OF NOPE"/>
         <TodoList
           todos={this.state.todos}
           handleTodoItemClick={this.handleTodoItemClick}
