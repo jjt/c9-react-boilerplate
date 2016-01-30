@@ -10,8 +10,14 @@ const app = express();
 const compiler = webpack(config);
 
 app.use(require('webpack-dev-middleware')(compiler, {
-  noInfo: true,
-  publicPath: config.output.publicPath
+  publicPath: config.output.publicPath,
+  noInfo: false,
+  quiet: false,
+  lazy: false,
+  stats: {
+    colors: true,
+    cached: false
+  }
 }));
 
 app.use(require('webpack-hot-middleware')(compiler));
@@ -26,5 +32,6 @@ app.listen(port, ip, function(err) {
     return;
   }
 
-  console.log(`Listening at http://${ip}:${port}`);
+  console.log(`App listening at http://${ip}:${port}`);
+  console.log('Performing initial build...')
 });
