@@ -2,7 +2,7 @@
 
 This is a boilerplate repo for the Intro to React.js workshop.
 
-## c9.io
+## Instructions for c9.io
 
 1. [Fork this repo](https://github.com/jjt/c9-react-boilerplate#fork-destination-box)
 2. Connect c9.io to your GH account
@@ -10,6 +10,10 @@ This is a boilerplate repo for the Intro to React.js workshop.
 3. `> nvm install && npm install`
 4. `> npm start`
 5. Open http://[REPO_NAME]-[C9_USERNAME].c9users.io in another tab
+
+## If c9.io fails
+
+Clone this JSBin https://jsbin.com/xopuni/1/edit?html,js,output
 
 #### Acknowledgements
 Originally based off of https://github.com/gaearon/react-transform-boilerplate/
