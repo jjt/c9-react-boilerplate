@@ -8,7 +8,7 @@
     "shrinkwrap": "npm shrinkwrap --dev"
   },
   "author": "Dan Abramov <dan.abramov@me.com> (http://github.com/gaearon)",
-  "license": "MIT",
+  "license": "CC0-1.0",
   "devDependencies": {
     "babel-core": "6.4.5",
     "babel-loader": "6.2.1",

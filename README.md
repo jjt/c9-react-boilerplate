@@ -1,6 +1,6 @@
 # TODON'T
 
-Based off of https://github.com/gaearon/react-transform-boilerplate/
+This is a boilerplate repo for the Intro to React.js workshop.
 
 ## c9.io
 
@@ -11,3 +11,5 @@ Based off of https://github.com/gaearon/react-transform-boilerplate/
 4. `> npm start`
 5. Open http://[REPO_NAME]-[C9_USERNAME].c9users.io in another tab
 
+#### Acknowledgements
+Originally based off of https://github.com/gaearon/react-transform-boilerplate/
