@@ -6,6 +6,8 @@ var host = process.env.IP || '127.0.0.1';
 module.exports = {
   devtool: 'cheap-module-eval-source-map',
   entry: [
+    'normalize.css',
+    './src/styles/app.css',
     'eventsource-polyfill', // necessary for hot reloading with IE
     './src/index'
   ],
