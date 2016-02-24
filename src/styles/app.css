@@ -1,6 +1,6 @@
 /* Base Application Styles */
 
-main {
+.app {
   color: #666;
   max-width: 500px;
   margin: 0 auto;
