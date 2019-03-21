@@ -18,7 +18,6 @@ export default class CapitalImprovement extends Component {
   }
   
   componentDidUpdate() {
-    console.log(this.state);
   }
   
   loadData() {
@@ -27,6 +26,7 @@ export default class CapitalImprovement extends Component {
       that.setState({
         capital_improvement_data: data
       });
+      console.log(data);
     });
     
     d3.json("https://information.stpaul.gov/api/geospatial/dq4n-yj8b?method=export&format=GeoJSON").then(function(data) {
@@ -41,7 +41,7 @@ export default class CapitalImprovement extends Component {
     return (
       <div className="CapitalImprovement">
         <h1> St.Paul Capital Improvements </h1>
-        <Map/>
+        { this.state.district_map.length === undefined && this.state.capital_improvement_data.length !== 0 ? (<Map geodata={this.state.district_map} data={this.state.capital_improvement_data}/>) : (<p> Loading Map Data </p>) }
       </div>
     );
   }

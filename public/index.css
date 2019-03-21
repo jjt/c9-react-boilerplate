@@ -1,0 +1,13 @@
+h1 {
+    text-align: center;
+}
+
+div .map {
+    margin: 0 auto;
+}
+
+svg {
+    background-color: #3f3f3f;
+    display : block;
+    margin: 0 auto;
+}
