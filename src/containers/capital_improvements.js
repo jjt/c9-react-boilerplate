@@ -26,7 +26,6 @@ export default class CapitalImprovement extends Component {
       that.setState({
         capital_improvement_data: data
       });
-      console.log(data);
     });
     
     d3.json("https://information.stpaul.gov/api/geospatial/dq4n-yj8b?method=export&format=GeoJSON").then(function(data) {

@@ -29,11 +29,16 @@ export default class Map extends Component {
       sum += parseInt(amountAllocated[(i+1).toString()]);
     }
     
+    const formatter = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+    });
+    
     let g = map.append("g");  
     g.append("text")
       .text("Total Adopted Improvements of St.Paul")
       .attr("fill", "white")
-      .attr("x", 300)
+      .attr("x", 235)
       .attr("y", 50);    
     
     g.selectAll('path')
@@ -47,9 +52,9 @@ export default class Map extends Component {
       });
     
     g.append("text")
-      .text("$" + sum)
+      .text(formatter.format(sum))
       .attr("fill", "white")
-      .attr("x", 420)
+      .attr("x", 390)
       .attr("y", 300);    
     
   }
@@ -75,7 +80,7 @@ export default class Map extends Component {
     g.append("text")
       .text("Total Adopted Improvements By District")
       .attr("fill", "white")
-      .attr("x", 300)
+      .attr("x", 235)
       .attr("y", 50);
     
       
@@ -92,9 +97,9 @@ export default class Map extends Component {
     g.selectAll("rect")
       .data(heightArr)
     .enter().append("rect")
-    .transition().delay(200)
     .attr("x", 820)
     .attr("y", function(d,i) { return heightArr[i]; })
+    .transition().delay(200)
     .attr("width", 50)
     .attr("height", 60)
     .attr("fill", function(d,i) {
