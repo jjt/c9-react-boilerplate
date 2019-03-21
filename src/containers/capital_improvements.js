@@ -8,8 +8,8 @@ export default class CapitalImprovement extends Component {
     super(props);
     this.loadData = this.loadData.bind(this);
     this.state = {
-        district_map: {},
-        capital_improvement_data: {}
+        district_map: [],
+        capital_improvement_data: []
     }
   }
   
@@ -17,14 +17,25 @@ export default class CapitalImprovement extends Component {
     this.loadData();
   }
   
+  componentDidUpdate() {
+    console.log(this.state);
+  }
+  
   loadData() {
-    d3.csv("https://information.stpaul.gov/api/views/c6jd-rwmu/rows.csv?accessType=DOWNLOAD", function(err, data) {
-      if (err) {
-        console.log(err);
-      }
-      console.log(data);
+    const that = this;
+    d3.csv("https://information.stpaul.gov/api/views/c6jd-rwmu/rows.csv?accessType=DOWNLOAD").then(function(data) {
+      that.setState({
+        capital_improvement_data: data
+      });
+    });
+    
+    d3.json("https://information.stpaul.gov/api/geospatial/dq4n-yj8b?method=export&format=GeoJSON").then(function(data) {
+      that.setState({
+        district_map: data
+      })
     });
   }
+
     
   render() {
     return (
