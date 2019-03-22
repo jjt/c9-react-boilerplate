@@ -22,11 +22,11 @@ export default class Map extends Component {
     const projection = d3.geoMercator().fitSize([900, 800], this.props.geodata);
     const path = d3.geoPath()
       .projection(projection);  
+    const amountAllocated = this.districtAllocated();
     
-    let amountAllocated = this.districtAllocated();
     let sum = 0;
     for (let i = 0; i < 17; i++) {
-      sum += parseInt(amountAllocated[(i+1).toString()]);
+      sum += amountAllocated[(i+1).toString()];
     }
     
     const formatter = new Intl.NumberFormat('en-US', {
@@ -49,6 +49,12 @@ export default class Map extends Component {
       .on("click", function() {
         that.destroyMap();
         that.updateMap()
+      })
+      .on("mouseover", function(){
+        d3.selectAll('path').attr("opacity", "0.8");
+      })
+      .on("mouseout", function() {
+        d3.selectAll('path').attr("opacity", "1.0");
       });
     
     g.append("text")
@@ -62,17 +68,19 @@ export default class Map extends Component {
   updateMap() {
     const map = d3.select(".Map svg");
     const projection = d3.geoMercator().fitSize([800, 800], this.props.geodata);
-    const path = d3.geoPath()
-      .projection(projection);  
-    
-    let amountAllocated = this.districtAllocated();
-    console.log(amountAllocated);
+    const path = d3.geoPath().projection(projection);  
+    const amountAllocated = this.districtAllocated();
     
     const colorScale  = d3.scaleLinear().domain([0, 80691859.99999999])
     .range(["white", "blue"]);
 
     const heightScale = d3.scaleLinear().domain([0, 800])
     .range(["blue", "white"]);
+
+    const formatter = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+    });
     
     const heightArr = [100, 160, 220, 280, 340, 400, 460, 520, 580, 640];
     let g = map.append("g");
@@ -87,11 +95,13 @@ export default class Map extends Component {
     g.selectAll('path')
       .data(this.props.geodata.features)
     .enter().append('path')
+      .on("mouseover", function(){ d3.select(this).attr("opacity", "0.8"); })
+      .on("mouseout", function() { d3.select(this).attr("opacity", "1.0"); })
       .transition().delay(200)
       .attr('d', path)
       .attr('fill', function(d,i) {
         return colorScale(amountAllocated[(i+1).toString()])
-      })
+      })      
     
     // Color Scale
     g.selectAll("rect")
@@ -106,6 +116,17 @@ export default class Map extends Component {
       return heightScale(heightArr[i]);
     });
     
+    g.append("text")
+      .text("80.7M")
+      .attr("fill", "white")
+      .attr("x", 810)
+      .attr("y", 90);   
+      
+    g.append("text")
+      .text("0.0M")
+      .attr("fill", "white")
+      .attr("x", 820)
+      .attr("y", 730);            
     
   }
   
