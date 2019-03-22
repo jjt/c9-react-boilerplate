@@ -25,3 +25,16 @@ svg {
 div .map {
     margin: 0 auto;
 }
+
+.tooltip {
+    position: absolute;
+    display:inline-block;
+    background: #2B2F37;
+    border-color: #262626;
+    box-shadow: 0px 1px 5px #000000;
+    color: white;
+    padding: 10px;
+    font-weight: bold;
+    user-select: none;
+    opacity: 0;
+}

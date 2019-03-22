@@ -15,7 +15,6 @@ export default class Map extends Component {
     this.createMap(); 
   }
 
-
   createMap() {
     const that = this;
     const map = d3.select(".Map svg");
@@ -23,7 +22,7 @@ export default class Map extends Component {
     const path = d3.geoPath()
       .projection(projection);  
     const amountAllocated = this.districtAllocated();
-    
+
     let sum = 0;
     for (let i = 0; i < 17; i++) {
       sum += amountAllocated[(i+1).toString()];
@@ -75,6 +74,7 @@ export default class Map extends Component {
     const projection = d3.geoMercator().fitSize([800, 800], this.props.geodata);
     const path = d3.geoPath().projection(projection);  
     const amountAllocated = this.districtAllocated();
+    const tooltip = d3.select(".Map div")
     
     const colorScale  = d3.scaleLinear().domain([0, 80691859.99999999])
     .range(["white", "blue"]);
@@ -101,8 +101,17 @@ export default class Map extends Component {
       .data(this.props.geodata.features)
     .enter().append('path')
       .attr("class", "map-piece")
-      .on("mouseover", function(){ d3.select(this).attr("opacity", "0.8"); })
-      .on("mouseout", function() { d3.select(this).attr("opacity", "1.0"); })
+      .on("mousemove", function(d,i){ 
+        d3.select(this).attr("opacity", "0.8"); 
+        tooltip.html("<p>" + d.properties.name2 + ": " + formatter.format(amountAllocated[(i+1).toString()]) + "</p>")
+          .style("opacity", "1.0")
+          .style("left", d3.event.pageX + "px")
+          .style("top", d3.event.pageY - 80 + "px");
+      })
+      .on("mouseout", function() { 
+        d3.select(this).attr("opacity", "1.0"); 
+        tooltip.style("opacity", "0.0"); 
+      })
       .transition().delay(200)
       .attr('d', path)
       .attr('fill', function(d,i) {
@@ -145,6 +154,7 @@ export default class Map extends Component {
   }
   
   districtAllocated() {
+    // TODO: Redo district amount.
     let districtAmount = { "1": 0, "2":0, "3":0, "4":0, "5":0, "6":0, "7":0, "8":0, "9":0, "10":0, "11":0, "12":0, "13":0, "14":0, "15":0, "16":0, "17":0, "Citywide":0}
     const financialData = this.props.data;
     for (let i = 0; i < financialData.length; i++) {
@@ -162,6 +172,7 @@ export default class Map extends Component {
     return (
       <div className="Map">
        <svg width="900" height="800"/>
+       <div className="tooltip"></div>
       </div>
     );
   }
