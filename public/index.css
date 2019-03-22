@@ -13,12 +13,15 @@ h1 {
     color: white;
 }
 
-div .map {
-    margin: 0 auto;
-    
-}
-
 svg {
     display: block;
+    margin: 0 auto;
+}
+
+.map-piece {
+    cursor: pointer;
+}
+
+div .map {
     margin: 0 auto;
 }

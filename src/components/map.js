@@ -45,6 +45,7 @@ export default class Map extends Component {
       .data(this.props.geodata.features)
     .enter().append('path')
       .attr('d', path)
+      .attr("class", "map-piece")
       .attr('fill', "rgb(102,178,255)")
       .on("click", function() {
         that.destroyMap();
@@ -62,7 +63,11 @@ export default class Map extends Component {
       .attr("fill", "white")
       .attr("x", 390)
       .attr("y", 300);    
-    
+    g.append("text")
+      .text("(Click Me)")
+      .attr("fill", "white")
+      .attr("x", 425)
+      .attr("y", 325);       
   }
 
   updateMap() {
@@ -95,6 +100,7 @@ export default class Map extends Component {
     g.selectAll('path')
       .data(this.props.geodata.features)
     .enter().append('path')
+      .attr("class", "map-piece")
       .on("mouseover", function(){ d3.select(this).attr("opacity", "0.8"); })
       .on("mouseout", function() { d3.select(this).attr("opacity", "1.0"); })
       .transition().delay(200)
@@ -116,16 +122,18 @@ export default class Map extends Component {
       return heightScale(heightArr[i]);
     });
     
+    const scaleFormatter = d3.format(".2s")
+    
     g.append("text")
-      .text("80.7M")
+      .text(scaleFormatter(80691859))
       .attr("fill", "white")
-      .attr("x", 810)
+      .attr("x", 820)
       .attr("y", 90);   
       
     g.append("text")
-      .text("0.0M")
+      .text(scaleFormatter(0))
       .attr("fill", "white")
-      .attr("x", 820)
+      .attr("x", 830)
       .attr("y", 730);            
     
   }
