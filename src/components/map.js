@@ -107,7 +107,7 @@ export default class Map extends Component {
       .attr('d', path)
       .attr('fill', function(d,i) {
         return colorScale(amountAllocated[(i+1).toString()])
-      })      
+      });     
     
     // Color Scale
     g.selectAll("rect")
@@ -148,10 +148,10 @@ export default class Map extends Component {
     let districtAmount = { "1": 0, "2":0, "3":0, "4":0, "5":0, "6":0, "7":0, "8":0, "9":0, "10":0, "11":0, "12":0, "13":0, "14":0, "15":0, "16":0, "17":0, "Citywide":0}
     const financialData = this.props.data;
     for (let i = 0; i < financialData.length; i++) {
-      let districts = financialData[i].DISTRICT.split(",");
+      let districts = financialData[i].district.split(",");
       for (let c = 0; c < districts.length;  c++) {
-        if (!isNaN(parseInt(financialData[i].Amount))) {
-          districtAmount[districts[c].trim()] += parseInt(financialData[i].Amount)/districts.length;
+        if (!isNaN(parseInt(financialData[i].amount))) {
+          districtAmount[districts[c].trim()] += parseInt(financialData[i].amount)/districts.length;
         }
       }
     }

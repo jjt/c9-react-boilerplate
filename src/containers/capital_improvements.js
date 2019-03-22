@@ -22,7 +22,8 @@ export default class CapitalImprovement extends Component {
   
   loadData() {
     const that = this;
-    d3.csv("https://information.stpaul.gov/api/views/c6jd-rwmu/rows.csv?accessType=DOWNLOAD").then(function(data) {
+    d3.csv("https://raw.githubusercontent.com/davimchun45/datasets/master/capital_budgets_improvements.csv").then(function(data) {
+            console.log(data);
       that.setState({
         capital_improvement_data: data
       });
