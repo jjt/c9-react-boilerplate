@@ -58,7 +58,7 @@ export default class Map extends Component {
       .on("mouseout", function() {
         d3.selectAll('path').attr("opacity", "1.0");
       });
-    
+      
     g.append("text")
       .text(formatter.format(sum))
       .attr("fill", "white")
@@ -78,6 +78,7 @@ export default class Map extends Component {
     const path = d3.geoPath().projection(projection);  
     const amountAllocated = this.districtAllocated();
     const tooltip = d3.select(".Map div")
+    let selectedIndex = -1;
     
     const min_max = d3.extent(amountAllocated, function(d) {
       if (d.name !== "Citywide") {
@@ -107,6 +108,7 @@ export default class Map extends Component {
     .enter().append('path')
       .attr("class", "map-piece")
       .on("click", function(d,i){
+        selectedIndex = i;
         let centroid = path.centroid(d);
         if (i === 15) {
           g.transition()
@@ -126,8 +128,12 @@ export default class Map extends Component {
           .style("left", d3.event.pageX + "px")
           .style("top", d3.event.pageY - 80 + "px");
       })
-      .on("mouseout", function() { 
-        d3.select(this).attr("opacity", "1.0"); 
+      .on("mouseout", function(d, i) {
+        if (selectedIndex !== -1 && selectedIndex !== i) {
+          d3.select(this).attr("opacity", "0.3"); 
+        } else {
+          d3.select(this).attr("opacity", "1.0"); 
+        }
         tooltip.style("opacity", "0.0"); 
       })
       .transition().delay(200)
@@ -140,8 +146,16 @@ export default class Map extends Component {
       this.timelineScale(g);
   }
   
+  // Set other paths to lower opacity.
   selectMap(portion) {
-    console.log(portion);
+    d3.selectAll('path')
+    .attr("opacity",function(d,i) {
+      if (d.properties.district !== portion.properties.district) {
+        return 0.3;
+      }
+      return 1;
+    })
+    
   }
   
   destroyMap() {
