@@ -8,6 +8,7 @@ export default class Map extends Component {
     this.destroyMap = this.destroyMap.bind(this);
     this.updateMap = this.updateMap.bind(this);
     this.districtAllocated = this.districtAllocated.bind(this);
+    this.parseTimeLine = this.parseTimeLine.bind(this);
   }
   
   // Type check for data types passed into map.js then create map if correct.  
@@ -22,10 +23,11 @@ export default class Map extends Component {
     const path = d3.geoPath()
       .projection(projection);  
     const amountAllocated = this.districtAllocated();
-
+    
     let sum = 0;
+    
     for (let i = 0; i < 17; i++) {
-      sum += amountAllocated[(i+1).toString()];
+      sum += amountAllocated[i].value;
     }
     
     const formatter = new Intl.NumberFormat('en-US', {
@@ -40,7 +42,7 @@ export default class Map extends Component {
       .attr("x", 235)
       .attr("y", 50);    
     
-    g.selectAll('path')
+    g.append('g').selectAll('path')
       .data(this.props.geodata.features)
     .enter().append('path')
       .attr('d', path)
@@ -76,18 +78,20 @@ export default class Map extends Component {
     const amountAllocated = this.districtAllocated();
     const tooltip = d3.select(".Map div")
     
-    const colorScale  = d3.scaleLinear().domain([0, 80691859.99999999])
+    const min_max = d3.extent(amountAllocated, function(d) {
+      if (d.name !== "Citywide") {
+        return d.value;
+      }
+    })
+  
+    const colorScale  = d3.scaleLinear().domain(min_max)
     .range(["white", "blue"]);
-
-    const heightScale = d3.scaleLinear().domain([0, 800])
-    .range(["blue", "white"]);
 
     const formatter = new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
     });
     
-    const heightArr = [100, 160, 220, 280, 340, 400, 460, 520, 580, 640];
     let g = map.append("g");
 
     g.append("text")
@@ -97,13 +101,13 @@ export default class Map extends Component {
       .attr("y", 50);
     
       
-    g.selectAll('path')
+    g.append("g").selectAll('path')
       .data(this.props.geodata.features)
     .enter().append('path')
       .attr("class", "map-piece")
       .on("mousemove", function(d,i){ 
         d3.select(this).attr("opacity", "0.8"); 
-        tooltip.html("<p>" + d.properties.name2 + ": " + formatter.format(amountAllocated[(i+1).toString()]) + "</p>")
+        tooltip.html("<p>" + d.properties.name2 + ": " + formatter.format(amountAllocated[i].value) + "</p>")
           .style("opacity", "1.0")
           .style("left", d3.event.pageX + "px")
           .style("top", d3.event.pageY - 80 + "px");
@@ -115,35 +119,14 @@ export default class Map extends Component {
       .transition().delay(200)
       .attr('d', path)
       .attr('fill', function(d,i) {
-        return colorScale(amountAllocated[(i+1).toString()])
+        return colorScale(amountAllocated[i].value)
       });     
-    
-    // Color Scale
-    g.selectAll("rect")
-      .data(heightArr)
-    .enter().append("rect")
-    .attr("x", 820)
-    .attr("y", function(d,i) { return heightArr[i]; })
-    .transition().delay(200)
-    .attr("width", 50)
-    .attr("height", 60)
-    .attr("fill", function(d,i) {
-      return heightScale(heightArr[i]);
-    });
-    
-    const scaleFormatter = d3.format(".2s")
-    
-    g.append("text")
-      .text(scaleFormatter(80691859))
-      .attr("fill", "white")
-      .attr("x", 820)
-      .attr("y", 90);   
-      
-    g.append("text")
-      .text(scaleFormatter(0))
-      .attr("fill", "white")
-      .attr("x", 830)
-      .attr("y", 730);            
+
+      this.colorScale(g, min_max);
+      this.timelineScale(g);
+  }
+  
+  selectMap(portion) {
     
   }
   
@@ -152,20 +135,113 @@ export default class Map extends Component {
     let g = svg.select("g").transition().style("opacity", 0);
     g.remove();
   }
+
+  timelineScale(g) {
+    // const timeData = this.parseTimeLine();
+    const timeScale = d3.scaleLinear().domain([2004, 2019]).range(["blue", "white"]);
+  
+  }
+
+  colorScale(g, min_max) {
+    const heightScale = d3.scaleLinear().domain([0, 800]).range(["blue", "white"]);
+    const heightArr = [100, 160, 220, 280, 340, 400, 460, 520, 580, 640];    
+    // Color Scale
+    g.append('g').selectAll("rect")
+      .data(heightArr)
+    .enter().append("rect")
+    .attr("x", 820)
+    .attr("y", function(d,i) { return d })
+    .transition().delay(200)
+    .attr("width", 50)
+    .attr("height", 60)
+    .attr("fill", function(d,i) {
+      return heightScale(d);
+    });
+    
+    const scaleFormatter = d3.format(".2s")
+    
+    g.append("text")
+      .text(scaleFormatter(min_max[1]))
+      .attr("fill", "white")
+      .attr("x", 820)
+      .attr("y", 90);   
+      
+    g.append("text")
+      .text(scaleFormatter(min_max[0]))
+      .attr("fill", "white")
+      .attr("x", 820)
+      .attr("y", 730);            
+    
+  }
   
   districtAllocated() {
     // TODO: Redo district amount.
-    let districtAmount = { "1": 0, "2":0, "3":0, "4":0, "5":0, "6":0, "7":0, "8":0, "9":0, "10":0, "11":0, "12":0, "13":0, "14":0, "15":0, "16":0, "17":0, "Citywide":0}
+    let districtAmount = [
+      { name: "1", value: 0 }, 
+      { name: "2", value: 0 }, 
+      { name: "3", value: 0 }, 
+      { name: "4", value: 0 }, 
+      { name: "5", value: 0 }, 
+      { name: "6", value: 0 }, 
+      { name: "7", value: 0 }, 
+      { name: "8", value: 0 }, 
+      { name: "9", value: 0 }, 
+      { name: "10", value: 0 }, 
+      { name: "11", value: 0 },
+      { name: "12", value: 0 }, 
+      { name: "13", value: 0 }, 
+      { name: "14", value: 0 }, 
+      { name: "15", value: 0 }, 
+      { name: "16", value: 0 },
+      { name: "17", value: 0 }, 
+      { name: "Citywide", value: 0 }
+    ]
+    
+    const map_key = {
+      "1":0,
+      "2":1,
+      "3":2,
+      "4":3,
+      "5":4,
+      "6":5,
+      "7":6,
+      "8":7,
+      "9":8,
+      "10":9,
+      "11":10,
+      "12":11,
+      "13":12,
+      "14":13,
+      "15":14,
+      "16":15,
+      "17":16,
+      "Citywide":17,
+    }
+    
     const financialData = this.props.data;
     for (let i = 0; i < financialData.length; i++) {
       let districts = financialData[i].district.split(",");
       for (let c = 0; c < districts.length;  c++) {
         if (!isNaN(parseInt(financialData[i].amount))) {
-          districtAmount[districts[c].trim()] += parseInt(financialData[i].amount)/districts.length;
+          const index = map_key[districts[c].trim()];
+          if (index !== undefined) {
+            districtAmount[index].value += parseInt(financialData[i].amount)/districts.length;
+          }    
         }
       }
     }
     return districtAmount;
+  }
+  
+  parseTimeLine(g) {
+    console.log(this.props.data);
+    let timeLine = [];
+    for(let i = 0; i < this.props.data.length; i++) {
+      let dataPoint = this.props.data[i];
+      // if(timeLine.filter((entry) => { entry.year === dataPoint.year })) {
+        
+      // }
+    }
   }
   
   render() {

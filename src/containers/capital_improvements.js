@@ -23,7 +23,6 @@ export default class CapitalImprovement extends Component {
   loadData() {
     const that = this;
     d3.csv("https://raw.githubusercontent.com/davimchun45/datasets/master/capital_budgets_improvements.csv").then(function(data) {
-            console.log(data);
       that.setState({
         capital_improvement_data: data
       });
@@ -41,7 +40,7 @@ export default class CapitalImprovement extends Component {
     return (
       <div className="CapitalImprovement">
         <h1> St.Paul Capital Improvements </h1>
-        { this.state.district_map.length === undefined && this.state.capital_improvement_data.length !== 0 ? (<Map geodata={this.state.district_map} data={this.state.capital_improvement_data}/>) : (<p> Loading Map Data </p>) }
+        { this.state.district_map.length === undefined && this.state.capital_improvement_data.length !== 0 ? (<Map geodata={this.state.district_map} data={this.state.capital_improvement_data}/>) : (<p className="loading"> Loading Map Data...</p>) }
       </div>
     );
   }

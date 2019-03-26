@@ -38,3 +38,9 @@ div .map {
     user-select: none;
     opacity: 0;
 }
+
+.loading {
+    color: white;
+    font-size: 24px;
+    text-align: center;
+}
