@@ -50,7 +50,7 @@ export default class Map extends Component {
       .attr('fill', "rgb(102,178,255)")
       .on("click", function() {
         that.destroyMap();
-        that.updateMap()
+        that.updateMap();
       })
       .on("mouseover", function(){
         d3.selectAll('path').attr("opacity", "0.8");
@@ -72,6 +72,7 @@ export default class Map extends Component {
   }
 
   updateMap() {
+    const that = this;
     const map = d3.select(".Map svg");
     const projection = d3.geoMercator().fitSize([800, 800], this.props.geodata);
     const path = d3.geoPath().projection(projection);  
@@ -84,7 +85,7 @@ export default class Map extends Component {
       }
     })
   
-    const colorScale  = d3.scaleLinear().domain(min_max)
+    const colorScale  = d3.scaleLinear().domain([0,min_max[1]])
     .range(["white", "blue"]);
 
     const formatter = new Intl.NumberFormat('en-US', {
@@ -105,6 +106,19 @@ export default class Map extends Component {
       .data(this.props.geodata.features)
     .enter().append('path')
       .attr("class", "map-piece")
+      .on("click", function(d,i){
+        let centroid = path.centroid(d);
+        if (i === 15) {
+          g.transition()
+            .duration(750)
+            .attr("transform", "translate(" + 800 / 2 + "," + 800 / 2 + ")scale(" + 2 + ")translate(" + -centroid[0] + "," + -centroid[1] + ")");                 
+        } else {
+          g.transition()
+            .duration(750)
+            .attr("transform", "translate(" + 800 / 2 + "," + 800 / 2 + ")scale(" + 3 + ")translate(" + -centroid[0] + "," + -centroid[1] + ")");          
+        }
+        return that.selectMap(d);
+      })
       .on("mousemove", function(d,i){ 
         d3.select(this).attr("opacity", "0.8"); 
         tooltip.html("<p>" + d.properties.name2 + ": " + formatter.format(amountAllocated[i].value) + "</p>")
@@ -127,7 +141,7 @@ export default class Map extends Component {
   }
   
   selectMap(portion) {
-    
+    console.log(portion);
   }
   
   destroyMap() {
@@ -167,9 +181,9 @@ export default class Map extends Component {
       .attr("y", 90);   
       
     g.append("text")
-      .text(scaleFormatter(min_max[0]))
+      .text(scaleFormatter(0))
       .attr("fill", "white")
-      .attr("x", 820)
+      .attr("x", 830)
       .attr("y", 730);            
     
   }

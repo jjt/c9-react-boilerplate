@@ -20,6 +20,9 @@ svg {
 
 .map-piece {
     cursor: pointer;
+      paint-order: stroke fill;
+      stroke-width: 2;
+      stroke: #0f0f0f;
 }
 
 div .map {
