@@ -111,22 +111,17 @@ export default class Map extends Component {
       .on("click", function(d,i){
         selectedIndex = i;
         let centroid = path.centroid(d);
-        if (i === 15) {
-          g.transition()
-            .duration(750)
-            .attr("transform", "translate(" + 800 / 2 + "," + 800 / 2 + ")scale(" + 2 + ")translate(" + -centroid[0] + "," + -centroid[1] + ")");                 
-        } else {
-          g.transition()
-            .duration(750)
-            .attr("transform", "translate(" + 800 / 2 + "," + 800 / 2 + ")scale(" + 3 + ")translate(" + -centroid[0] + "," + -centroid[1] + ")");          
-        }
+        g.transition()
+          .duration(750)
+          .attr("transform", "translate(" + 900 / 2 + "," + 900 / 2 + ")scale(" + 2 + ")translate(" + -centroid[0] + "," + -centroid[1] + ")");                 
+
         d3.select("body").on("keypress", function() {
           if(d3.event.keyCode === 45){
             that.unSelectMap();
             selectedIndex = -1;
             g.transition()
               .duration(750)
-              .attr("transform", "translate(" + 800 / 2 + "," + 800 / 2 + ")scale(" + 1 + ")translate(" + -400 + "," + -400 + ")");
+              .attr("transform", "translate(" + 900 / 2 + "," + 900 / 2 + ")scale(" + 1 + ")translate(" + -450 + "," + -450 + ")");
           }
         });
         return that.selectMap(d);
