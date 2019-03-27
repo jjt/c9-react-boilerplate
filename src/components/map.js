@@ -6,6 +6,7 @@ export default class Map extends Component {
     super(props);
     this.createMap = this.createMap.bind(this);
     this.destroyMap = this.destroyMap.bind(this);
+    this.selectMap = this.selectMap.bind(this);
     this.updateMap = this.updateMap.bind(this);
     this.districtAllocated = this.districtAllocated.bind(this);
     this.parseTimeLine = this.parseTimeLine.bind(this);
@@ -119,6 +120,15 @@ export default class Map extends Component {
             .duration(750)
             .attr("transform", "translate(" + 800 / 2 + "," + 800 / 2 + ")scale(" + 3 + ")translate(" + -centroid[0] + "," + -centroid[1] + ")");          
         }
+        d3.select("body").on("keypress", function() {
+          if(d3.event.keyCode === 45){
+            that.unSelectMap();
+            selectedIndex = -1;
+            g.transition()
+              .duration(750)
+              .attr("transform", "translate(" + 800 / 2 + "," + 800 / 2 + ")scale(" + 1 + ")translate(" + -400 + "," + -400 + ")");
+          }
+        });
         return that.selectMap(d);
       })
       .on("mousemove", function(d,i){ 
@@ -145,17 +155,24 @@ export default class Map extends Component {
       this.colorScale(g, min_max);
       this.timelineScale(g);
   }
-  
+
+  unSelectMap() {
+    d3.selectAll('path')
+    .attr("opacity",function(d,i) {
+      return 1;
+    });    
+  }
+    
   // Set other paths to lower opacity.
   selectMap(portion) {
+    console.log(this.props.data);
     d3.selectAll('path')
     .attr("opacity",function(d,i) {
       if (d.properties.district !== portion.properties.district) {
         return 0.3;
       }
       return 1;
-    })
-    
+    });
   }
   
   destroyMap() {
