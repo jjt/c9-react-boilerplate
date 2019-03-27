@@ -111,9 +111,7 @@ export default class Map extends Component {
       .on("click", function(d,i){
         selectedIndex = i;
         let centroid = path.centroid(d);
-        g.transition()
-          .duration(750)
-          .attr("transform", "translate(" + 900 / 2 + "," + 900 / 2 + ")scale(" + 2 + ")translate(" + -centroid[0] + "," + -centroid[1] + ")");                 
+        that.selectMap(d, projection);
 
         d3.select("body").on("keypress", function() {
           if(d3.event.keyCode === 45){
@@ -124,7 +122,11 @@ export default class Map extends Component {
               .attr("transform", "translate(" + 900 / 2 + "," + 900 / 2 + ")scale(" + 1 + ")translate(" + -450 + "," + -450 + ")");
           }
         });
-        return that.selectMap(d);
+        
+        g.transition()
+          .duration(750)
+          .attr("transform", "translate(" + 900 / 2 + "," + 900 / 2 + ")scale(" + 2 + ")translate(" + -centroid[0] + "," + -centroid[1] + ")");                 
+
       })
       .on("mousemove", function(d,i){ 
         d3.select(this).attr("opacity", "0.8"); 
@@ -152,6 +154,7 @@ export default class Map extends Component {
   }
 
   unSelectMap() {
+    d3.select(".Map svg g").selectAll('circle').remove();
     d3.selectAll('path')
     .attr("opacity",function(d,i) {
       return 1;
@@ -159,8 +162,11 @@ export default class Map extends Component {
   }
     
   // Set other paths to lower opacity.
-  selectMap(portion) {
-    console.log(this.props.data);
+  selectMap(portion, projection) {
+    const districtPoints = this.parseDistrict(this.props.data, portion);
+    const map = d3.select(".Map svg");
+    let g = map.select('g');
+    
     d3.selectAll('path')
     .attr("opacity",function(d,i) {
       if (d.properties.district !== portion.properties.district) {
@@ -168,6 +174,19 @@ export default class Map extends Component {
       }
       return 1;
     });
+    
+    g.selectAll('circle').remove();
+    
+    g.selectAll('circle')
+      .data(districtPoints)
+    .enter().append('circle')
+      .attr("class", "map-point")
+      .attr("cx", function(d,i) { return projection([d.longitude, d.latitude])[0]; })
+      .attr("cy", function(d,i) { return projection([d.longitude, d.latitude])[1]; })
+      .attr("r", 5)
+      .transition()
+      .delay(200)
+      .attr("fill", "black");
   }
   
   destroyMap() {
@@ -282,6 +301,18 @@ export default class Map extends Component {
         
       // }
     }
+  }
+  
+  parseDistrict(data, portion) {
+    let districtData = [];
+    for (let i = 0; i < data.length; i++) {
+      const latitude = parseFloat(data[i].latitude);
+      const longitude = parseFloat(data[i].longitude);
+      if (d3.geoContains(portion, [longitude, latitude])) {
+        districtData.push(data[i]);
+      }
+    }
+    return districtData;
   }
   
   render() {
