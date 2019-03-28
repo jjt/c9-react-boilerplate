@@ -154,7 +154,8 @@ export default class Map extends Component {
   }
 
   unSelectMap() {
-    d3.select(".Map svg g").selectAll('circle').remove();
+    d3.select(".Map svg g").selectAll('.map-point').remove();
+    d3.select(".Map svg g").selectAll('.map-text').remove();
     d3.selectAll('path')
     .attr("opacity",function(d,i) {
       return 1;
@@ -163,6 +164,10 @@ export default class Map extends Component {
     
   // Set other paths to lower opacity.
   selectMap(portion, projection) {
+    const improvementsScale = d3.scaleOrdinal()
+      .domain(['Community Facilities', 'Internal Service', 'Streets and Utilities', 'Residential and Economic Development'])
+      .range(['orange', 'red', 'green', 'white']);
+      
     const districtPoints = this.parseDistrict(this.props.data, portion);
     const map = d3.select(".Map svg");
     let g = map.select('g');
@@ -175,7 +180,8 @@ export default class Map extends Component {
       return 1;
     });
     
-    g.selectAll('circle').remove();
+    g.selectAll('.map-point').remove();
+    g.selectAll('.map-text').remove();
     
     g.selectAll('circle')
       .data(districtPoints)
@@ -183,10 +189,18 @@ export default class Map extends Component {
       .attr("class", "map-point")
       .attr("cx", function(d,i) { return projection([d.longitude, d.latitude])[0]; })
       .attr("cy", function(d,i) { return projection([d.longitude, d.latitude])[1]; })
-      .attr("r", 5)
-      .transition()
-      .delay(200)
-      .attr("fill", "black");
+      .attr("r", 7.5)
+      .attr("fill", function(d,i) {
+        return improvementsScale(d.service);
+      });
+    
+    g.selectAll('text')
+      .data(districtPoints)
+    .enter().append("text")
+      .attr("class", "map-text")
+      .attr("x", function(d,i) { return projection([d.longitude, d.latitude])[0] - 4; })
+      .attr("y", function(d,i) { return projection([d.longitude, d.latitude])[1] + 5; })
+      .text(function(d) { return d.service.charAt(0); });
   }
   
   destroyMap() {

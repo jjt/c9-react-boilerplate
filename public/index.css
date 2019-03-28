@@ -18,11 +18,17 @@ svg {
     margin: 0 auto;
 }
 
+.map-point {
+    cursor: pointer;
+    stroke-width: 1;
+    stroke: #0f0f0f;
+}
+
 .map-piece {
     cursor: pointer;
-      paint-order: stroke fill;
-      stroke-width: 2;
-      stroke: #0f0f0f;
+    paint-order: stroke fill;
+    stroke-width: 2;
+    stroke: #0f0f0f;
 }
 
 div .map {
@@ -40,6 +46,12 @@ div .map {
     font-weight: bold;
     user-select: none;
     opacity: 0;
+}
+
+.map-text {
+    cursor: pointer;
+    font-size: 12px;
+    user-select: none;
 }
 
 .loading {
