@@ -31,7 +31,7 @@ export default class Timeline extends Component {
 
   timelineScale() {
     // const timeData = this.parseTimeLine();
-    const timeScale = d3.scaleLinear().domain([2004, 2019]).range([0, 600]);
+    const timeScale = d3.scaleLinear().domain([2004,2019]).range([0, 600]);
     const serviceScale =  d3.scaleOrdinal()
       .domain(['Community Facilities', 'Internal Service', 'Streets and Utilities', 'Residential and Economic Development'])
       .range([-20,-10,0,10])
@@ -60,7 +60,7 @@ export default class Timeline extends Component {
       .attr('fill', function(d) { return improvementsScale(d.service)});
     
     new_g.attr("class", "brush")
-    .call(d3.brush().on("brush", null));
+    .call(d3.brushX().on("brush", null));
       
   }
 
