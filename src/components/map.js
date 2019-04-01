@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import * as d3 from 'd3';
 
+import Timeline from './timeline.js';
+
 export default class Map extends Component {
   constructor(props) {
     super(props);
@@ -9,7 +11,6 @@ export default class Map extends Component {
     this.selectMap = this.selectMap.bind(this);
     this.updateMap = this.updateMap.bind(this);
     this.districtAllocated = this.districtAllocated.bind(this);
-    this.parseTimeLine = this.parseTimeLine.bind(this);
   }
   
   // Type check for data types passed into map.js then create map if correct.  
@@ -120,8 +121,8 @@ export default class Map extends Component {
         d3.select(this).attr("opacity", "0.8"); 
         tooltip.html("<p>" + d.properties.name2 + ": " + formatter.format(amountAllocated[i].value) + "</p>")
           .style("opacity", "1.0")
-          .style("left", d3.event.pageX + "px")
-          .style("top", d3.event.pageY - 80 + "px");
+          .style("left", d3.event.pageX - 475 + "px")
+          .style("top", d3.event.pageY - 100 + "px");
       })
       .on("mouseout", function(d, i) {
         if (selectedIndex !== -1 && selectedIndex !== i) {
@@ -138,7 +139,6 @@ export default class Map extends Component {
       });     
 
       this.colorScale(g, min_max);
-      this.timelineScale(g);
   }
 
   unSelectMap() {
@@ -154,16 +154,23 @@ export default class Map extends Component {
   selectMap(portion, projection) {
     const improvementsScale = d3.scaleOrdinal()
       .domain(['Community Facilities', 'Internal Service', 'Streets and Utilities', 'Residential and Economic Development'])
-      .range(['orange', 'red', 'green', 'white']);
+      .range(['#a6cee3', '#1f78b4', '#b2df8a', '#33a02c']);
+
+    const formatter = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+    });
       
     const tooltip = d3.select(".Map div")
     const districtPoints = this.parseDistrict(this.props.data, portion);
     const map = d3.select(".Map svg");
     let g = map.select('g');
     
+    console.log(d3.selectAll('path'));
+    
     d3.selectAll('path')
     .attr("opacity",function(d,i) {
-      if (d.properties.district !== portion.properties.district) {
+      if (d !== null && d.properties.district !== portion.properties.district) {
         return 0.3;
       }
       return 1;
@@ -186,7 +193,7 @@ export default class Map extends Component {
         tooltip.html(
           "<p> Title: " + d.title + "</p>" +
           "<p> Department: " + d.department + "</p>" +
-          "<p> Amount: " + d.amount + "</p>" +
+          "<p> Amount: " + formatter.format(d.amount) + "</p>" +
           "<p> District: " + d.district + "</p>" +
           "<p> Year: " + d.year + "</p>" +
           "<p> Location: " + d.location + "</p>" +
@@ -208,7 +215,7 @@ export default class Map extends Component {
         tooltip.html(
           "<p> Title: " + d.title + "</p>" +
           "<p> Department: " + d.department + "</p>" +
-          "<p> Amount: " + d.amount + "</p>" +
+          "<p> Amount: " + formatter.format(d.amount) + "</p>" +
           "<p> District: " + d.district + "</p>" +
           "<p> Year: " + d.year + "</p>" +
           "<p> Location: " + d.location + "</p>" +
@@ -225,14 +232,7 @@ export default class Map extends Component {
     let g = svg.select("g").transition().style("opacity", 0);
     g.remove();
   }
-
-  timelineScale(g) {
-    // const timeData = this.parseTimeLine();
-    const timeScale = d3.scaleLinear().domain([2004, 2019]).range([0, 800]);
-    
-    
-  }
-
+  
   colorScale(g, min_max) {
     const heightScale = d3.scaleLinear().domain([0, 800]).range(["blue", "white"]);
     const heightArr = [100, 160, 220, 280, 340, 400, 460, 520, 580, 640];    
@@ -323,18 +323,7 @@ export default class Map extends Component {
     }
     return districtAmount;
   }
-  
-  parseTimeLine(g) {
-    console.log(this.props.data);
-    let timeLine = [];
-    for(let i = 0; i < this.props.data.length; i++) {
-      let dataPoint = this.props.data[i];
-      // if(timeLine.filter((entry) => { entry.year === dataPoint.year })) {
-        
-      // }
-    }
-  }
-  
+
   parseDistrict(data, portion) {
     let districtData = [];
     for (let i = 0; i < data.length; i++) {
@@ -350,8 +339,10 @@ export default class Map extends Component {
   render() {
     return (
       <div className="Map">
+       <h2> Total Capital Improvements St. Paul </h2>
        <svg width="900" height="800"/>
        <div className="tooltip"></div>
+       <Timeline data={this.props.data}/>
       </div>
     );
   }

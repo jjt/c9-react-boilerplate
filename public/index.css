@@ -1,6 +1,8 @@
 body {
     background-color: #3f3f3f;
     font-family: 'Lato', sans-serif;
+    text-align: center;
+    color: white;
 }
 
 text {
@@ -8,18 +10,18 @@ text {
     font-size: 24px;
 }
 
-body {
-    text-align: center;
-    color: white;
-}
-
 h2 {
+    display: inline;
     margin: 5px;
 }
 
 svg {
     display: block;
     margin: 0 auto;
+}
+
+.card {
+    background-color: rgba(35,31,31,130);
 }
 
 .map-point {
@@ -51,6 +53,8 @@ div .map {
     user-select: none;
     opacity: 0;
     max-width: 400px;
+    max-height: 400px;
+    overflow: hidden;
 }
 
 .map-text {
