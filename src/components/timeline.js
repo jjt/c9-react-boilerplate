@@ -34,40 +34,36 @@ export default class Timeline extends Component {
     const timeScale = d3.scaleLinear().domain([2004,2019]).range([0, 600]);
     const serviceScale =  d3.scaleOrdinal()
       .domain(['Community Facilities', 'Internal Service', 'Streets and Utilities', 'Residential and Economic Development'])
-      .range([-20,-10,0,10])
+      .range([-15,-7.5,0,7.5])
     const timeData = this.parseTimeLine();
     const range = d3.extent(timeData, function(d){ return d.amount });
     const timeRange = d3.scaleLog().base(Math.E).domain(range).range([0, 100]);
     const improvementsScale = d3.scaleOrdinal()
       .domain(['Community Facilities', 'Internal Service', 'Streets and Utilities', 'Residential and Economic Development'])
       .range(['#a6cee3', '#1f78b4', '#b2df8a', '#33a02c']);
-      
+
     const axis = d3.axisBottom().scale(timeScale).tickFormat(d3.format("d"));
+    const svg = d3.select(".Timeline svg");
+    const new_g = svg.append("g").attr("transform", "translate(200,0)");
     
-    let svg = d3.select(".Timeline svg");
-    
-    let new_g = svg.append("g").attr("transform", "translate(200,0)");
-    
-    new_g.append("g").attr("transform", "translate(0, 75)").call(axis);
+    new_g.append("g").attr("transform", "translate(0, 90)").call(axis);
     
     new_g.selectAll('rect')
       .data(timeData)
     .enter().append("rect")
       .attr('x', function(d) { return timeScale(d.year) + serviceScale(d.service)})
-      .attr('y', function(d) { return (75-timeRange(d.amount)) })
-      .attr('width', 10)
+      .attr('y', function(d) { return (90-timeRange(d.amount)) })
+      .attr('width', 7.5)
       .attr('height', function (d) { return timeRange(d.amount) })
       .attr('fill', function(d) { return improvementsScale(d.service)});
     
-    new_g.attr("class", "brush")
-    .call(d3.brushX().on("brush", null));
-      
+    new_g.attr("class", "brush").call(d3.brushX().on("brush", null));
   }
 
   render() {
     return (
       <div className="Timeline">
-       <svg width="900" height="100"/>
+       <svg width="900" height="120"/>
       </div>
     );
   }
