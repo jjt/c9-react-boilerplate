@@ -37,11 +37,6 @@ export default class Map extends Component {
     });
     
     let g = map.append("g");  
-    g.append("text")
-      .text("Total Adopted Improvements of St.Paul")
-      .attr("fill", "white")
-      .attr("x", 235)
-      .attr("y", 50);    
     
     g.append('g').selectAll('path')
       .data(this.props.geodata.features)
@@ -96,13 +91,6 @@ export default class Map extends Component {
     });
     
     let g = map.append("g");
-
-    g.append("text")
-      .text("Total Adopted Improvements By District")
-      .attr("fill", "white")
-      .attr("x", 235)
-      .attr("y", 50);
-    
       
     g.append("g").selectAll('path')
       .data(this.props.geodata.features)
@@ -168,6 +156,7 @@ export default class Map extends Component {
       .domain(['Community Facilities', 'Internal Service', 'Streets and Utilities', 'Residential and Economic Development'])
       .range(['orange', 'red', 'green', 'white']);
       
+    const tooltip = d3.select(".Map div")
     const districtPoints = this.parseDistrict(this.props.data, portion);
     const map = d3.select(".Map svg");
     let g = map.select('g');
@@ -192,15 +181,43 @@ export default class Map extends Component {
       .attr("r", 7.5)
       .attr("fill", function(d,i) {
         return improvementsScale(d.service);
+      })
+      .on("mousemove", function(d,i){
+        tooltip.html(
+          "<p> Title: " + d.title + "</p>" +
+          "<p> Department: " + d.department + "</p>" +
+          "<p> Amount: " + d.amount + "</p>" +
+          "<p> District: " + d.district + "</p>" +
+          "<p> Year: " + d.year + "</p>" +
+          "<p> Location: " + d.location + "</p>" +
+          "<p> Description: " + d.description + "</p>"
+        )
+          .style("opacity", "1.0")
+          .style("left", d3.event.pageX + "px")
+          .style("top", d3.event.pageY - 175 + "px");
       });
     
     g.selectAll('text')
       .data(districtPoints)
     .enter().append("text")
       .attr("class", "map-text")
-      .attr("x", function(d,i) { return projection([d.longitude, d.latitude])[0] - 4; })
+      .attr("x", function(d,i) { return projection([d.longitude, d.latitude])[0] - 4.5; })
       .attr("y", function(d,i) { return projection([d.longitude, d.latitude])[1] + 5; })
-      .text(function(d) { return d.service.charAt(0); });
+      .text(function(d) { return d.service.charAt(0); })      
+      .on("mousemove", function(d,i){
+        tooltip.html(
+          "<p> Title: " + d.title + "</p>" +
+          "<p> Department: " + d.department + "</p>" +
+          "<p> Amount: " + d.amount + "</p>" +
+          "<p> District: " + d.district + "</p>" +
+          "<p> Year: " + d.year + "</p>" +
+          "<p> Location: " + d.location + "</p>" +
+          "<p> Description: " + d.description + "</p>"
+        )
+          .style("opacity", "1.0")
+          .style("left", d3.event.pageX + "px")
+          .style("top", d3.event.pageY - 175 + "px");
+      });
   }
   
   destroyMap() {
@@ -211,8 +228,9 @@ export default class Map extends Component {
 
   timelineScale(g) {
     // const timeData = this.parseTimeLine();
-    const timeScale = d3.scaleLinear().domain([2004, 2019]).range(["blue", "white"]);
-  
+    const timeScale = d3.scaleLinear().domain([2004, 2019]).range([0, 800]);
+    
+    
   }
 
   colorScale(g, min_max) {

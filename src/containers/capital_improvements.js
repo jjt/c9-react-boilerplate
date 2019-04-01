@@ -40,6 +40,7 @@ export default class CapitalImprovement extends Component {
     return (
       <div className="CapitalImprovement">
         <h1> St.Paul Capital Improvements </h1>
+        <h2> Total Capital Improvements St. Paul </h2>
         { this.state.district_map.length === undefined && this.state.capital_improvement_data.length !== 0 ? (<Map geodata={this.state.district_map} data={this.state.capital_improvement_data}/>) : (<p className="loading"> Loading Map Data...</p>) }
       </div>
     );
