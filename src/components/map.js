@@ -268,45 +268,11 @@ export default class Map extends Component {
   districtAllocated() {
     // TODO: Redo district amount.
     let districtAmount = [
-      { name: "1", value: 0 }, 
-      { name: "2", value: 0 }, 
-      { name: "3", value: 0 }, 
-      { name: "4", value: 0 }, 
-      { name: "5", value: 0 }, 
-      { name: "6", value: 0 }, 
-      { name: "7", value: 0 }, 
-      { name: "8", value: 0 }, 
-      { name: "9", value: 0 }, 
-      { name: "10", value: 0 }, 
-      { name: "11", value: 0 },
-      { name: "12", value: 0 }, 
-      { name: "13", value: 0 }, 
-      { name: "14", value: 0 }, 
-      { name: "15", value: 0 }, 
-      { name: "16", value: 0 },
-      { name: "17", value: 0 }, 
-      { name: "Citywide", value: 0 }
+      {name:"1",value:0},{name:"2",value:0},{name:"3",value:0},{name:"4",value:0},{name:"5",value:0},{name:"6",value:0},{name:"7",value:0},{name:"8",value:0},{name:"9",value:0},{name:"10",value:0},{name:"11",value:0},{name:"12",value:0},{name:"13",value:0},{name:"14",value:0},{name:"15",value:0},{name:"16",value:0},{name:"17",value:0},{name:"Citywide",value:0}
     ]
     
     const map_key = {
-      "1":0,
-      "2":1,
-      "3":2,
-      "4":3,
-      "5":4,
-      "6":5,
-      "7":6,
-      "8":7,
-      "9":8,
-      "10":9,
-      "11":10,
-      "12":11,
-      "13":12,
-      "14":13,
-      "15":14,
-      "16":15,
-      "17":16,
-      "Citywide":17,
+      "1":0,"2":1,"3":2,"4":3,"5":4,"6":5,"7":6,"8":7,"9":8,"10":9,"11":10,"12":11,"13":12,"14":13,"15":14,"16":15,"17":16,"Citywide":17,
     }
     
     const financialData = this.props.data;

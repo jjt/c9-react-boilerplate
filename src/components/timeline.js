@@ -44,7 +44,7 @@ export default class Timeline extends Component {
 
     const axis = d3.axisBottom().scale(timeScale).tickFormat(d3.format("d"));
     const svg = d3.select(".Timeline svg");
-    const new_g = svg.append("g").attr("transform", "translate(200,0)");
+    const new_g = svg.append("g").attr("transform", "translate(170,0)");
     
     new_g.append("g").attr("transform", "translate(0, 90)").call(axis);
     
