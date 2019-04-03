@@ -102,8 +102,8 @@ export default class Map extends Component {
         let centroid = path.centroid(d);
         that.selectMap(d, projection);
 
-        d3.select("body").on("keypress", function() {
-          if(d3.event.keyCode === 45){
+        d3.select("body").on("keydown", function() {
+          if(d3.event.key === "Escape"){
             that.unSelectMap();
             selectedIndex = -1;
             g.transition()
