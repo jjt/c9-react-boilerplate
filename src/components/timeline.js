@@ -63,7 +63,7 @@ export default class Timeline extends Component {
   render() {
     return (
       <div className="Timeline">
-       <svg width="900" height="120"/>
+       <svg viewBox="0 0 900 120" preserveAspectRatio="xMidYMax meet"/>
       </div>
     );
   }

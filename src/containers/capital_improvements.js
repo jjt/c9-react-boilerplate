@@ -42,17 +42,17 @@ export default class CapitalImprovement extends Component {
         <h1> St.Paul Capital Improvements </h1>
         <div className="fluid-container">
           <div className="row">
-            <div className="col-1"></div>
-            <div className="col-6 card">
+            <div className="col-3"></div>
+            <div className="col-6">
             { this.state.district_map.length === undefined && this.state.capital_improvement_data.length !== 0 ? (<Map geodata={this.state.district_map} data={this.state.capital_improvement_data}/>) : (<p className="loading"> Loading Map Data...</p>) }
             </div>
-                      <div className="col-3"></div>
+            <div className="col-3"></div>
             <div className="col-4">
               <div className="row"></div>
               <div className="row"></div>
             </div>
           </div>
-          <div className="col-1"></div>
+
         </div>
       </div>
     );
