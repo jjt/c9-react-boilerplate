@@ -30,7 +30,7 @@ export default class Timeline extends Component {
   }
 
   timelineScale() {
-    // const timeData = this.parseTimeLine();
+    const that = this;
     const timeScale = d3.scaleLinear().domain([2004,2019]).range([0, 600]);
     const serviceScale =  d3.scaleOrdinal()
       .domain(['Community Facilities', 'Internal Service', 'Streets and Utilities', 'Residential and Economic Development'])
@@ -47,7 +47,6 @@ export default class Timeline extends Component {
     const new_g = svg.append("g").attr("transform", "translate(170,0)");
     
     new_g.append("g").attr("transform", "translate(0, 90)").call(axis);
-     
     new_g.selectAll('rect')
       .data(timeData)
     .enter().append("rect")
@@ -57,9 +56,14 @@ export default class Timeline extends Component {
       .attr('height', function (d) { return timeRange(d.amount) })
       .attr('fill', function(d) { return improvementsScale(d.service)});
     
-    const brush = d3.brushX().extent([[-20, 0], [620, 90]]).on("brush", null);
+    const brush = d3.brushX().extent([[-20, 0], [620, 90]]).on("brush", function() {
+        var extent = d3.event.selection.map(timeScale.invert, timeScale);
+        extent[0] = parseInt(extent[0]);
+        extent[1] = parseInt(extent[1]);
+        that.props.yearSelector(extent);    
+    });
+    
     new_g.attr("class", "brush").call(brush);
-
   }
 
   render() {
