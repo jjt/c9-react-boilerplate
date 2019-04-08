@@ -27,6 +27,10 @@ svg {
     bottom: 10px;
 }
 
+.Legend svg {
+    position: fixed;
+}
+
 .card {
     background-color: rgba(35,31,31,.51);
 }
