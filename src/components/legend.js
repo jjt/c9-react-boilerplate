@@ -7,7 +7,6 @@ export default class Legend extends Component {
   }
 
   componentDidMount() {
-    this.setupLegend();
   }
 
   parseLegend() {
@@ -17,7 +16,7 @@ export default class Legend extends Component {
     let serviceIndicators = this.props.data
       .map(d => d.charAt(0))
       .reduce((a, c) => {
-        if (c != a[a.length - 1]) {
+        if (c !== a[a.length - 1]) {
           return a.push(c);
         } else {
           return a;
