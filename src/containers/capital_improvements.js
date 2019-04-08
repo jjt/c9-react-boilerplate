@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import * as d3 from 'd3';
 import Map from '../components/map.js';
+import Legend from '../components/legend.js'
 
 
 export default class CapitalImprovement extends Component {
@@ -35,6 +36,10 @@ export default class CapitalImprovement extends Component {
     });
   }
 
+  ready() {
+    return this.state.district_map.length === undefined
+      && this.state.capital_improvement_data.length !== 0;
+  }
     
   render() {
     return (
@@ -44,15 +49,16 @@ export default class CapitalImprovement extends Component {
           <div className="row">
             <div className="col-3"></div>
             <div className="col-6">
-            { this.state.district_map.length === undefined && this.state.capital_improvement_data.length !== 0 ? (<Map geodata={this.state.district_map} data={this.state.capital_improvement_data}/>) : (<p className="loading"> Loading Map Data...</p>) }
+             { this.ready() ? (<Map geodata={this.state.district_map} data={this.state.capital_improvement_data}/>) : (<p className="loading"> Loading Map Data...</p>) }
+            </div> 
+            <div className="col-3"> 
+             { this.ready() ? <Legend data={this.state.capital_improvement_data} /> : "" }
             </div>
-            <div className="col-3"></div>
-            <div className="col-4">
+            <div className="col-3">
               <div className="row"></div>
               <div className="row"></div>
             </div>
           </div>
-
         </div>
       </div>
     );
