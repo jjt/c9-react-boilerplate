@@ -34,7 +34,7 @@ export default class Legend extends Component {
     return (
         <svg width="30" height="30" viewBox="0 0 12 12">
          <circle className="legend-point" r="5" cx="6" cy="6" fill={getColor(letter)}/>
-         <text className="legend-text" x="4" y="8">{letter}</text>
+         <text className="legend-text" x="3.5" y="8.5">{letter}</text>
         </svg>
     );
   }
