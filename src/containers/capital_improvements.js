@@ -50,14 +50,15 @@ export default class CapitalImprovement extends Component {
             <div className="col-3"></div>
             <div className="col-6">
              { this.ready() ? (<Map geodata={this.state.district_map} data={this.state.capital_improvement_data}/>) : (<p className="loading"> Loading Map Data...</p>) }
+            </div> 
+            <div className="col-3"> 
+             { this.ready() ? <Legend data={this.state.capital_improvement_data} /> : "" }
             </div>
-            <div className="col-3"></div>
             <div className="col-4">
               <div className="row"></div>
               <div className="row"></div>
             </div>
           </div>
-
         </div>
       </div>
     );

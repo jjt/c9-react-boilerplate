@@ -14,12 +14,12 @@ export default class Legend extends Component {
     let services = this.props.data
         .map(d => d.service)
         .sort()
-        .reduce((a, c) => {
-          if (a.length === 0 ||
-              c.toLowerCase() !== a[a.length - 1].toLowerCase()) {
-            a.push(c);
+        .reduce((acc, svc) => {
+          if (acc.length === 0 ||
+              svc.toLowerCase() !== acc[acc.length - 1].toLowerCase()) {
+            acc.push(svc);
           }
-          return a;
+          return acc;
         }, []);
 
     return services;

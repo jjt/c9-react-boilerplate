@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import * as d3 from 'd3';
 
 import Timeline from './timeline.js';
-import Legend from './legend.js';
 
 export default class Map extends Component {
   constructor(props) {
@@ -309,7 +308,6 @@ export default class Map extends Component {
        <h2> Total Capital Improvements St. Paul </h2>
        <svg viewBox="0 0 900 800" preserveAspectRatio="xMidYMax meet"/>
        <div className="tooltip"></div>
-       <Legend data={this.props.data}/>
        <Timeline data={this.props.data}/>
       </div>
     );
