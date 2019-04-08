@@ -25,10 +25,19 @@ export default class Legend extends Component {
     return services;
   }
 
+  makeIcon(letter) { 
+    return (
+        <svg width="30" height="30" viewBox="0 0 12 12">
+         <circle className="legend-point" r="5" cx="6" cy="6" fill="white"/>
+         <text className="legend-text" x="4" y="8">{letter}</text>
+        </svg>
+    );
+  }
+
   makeTable() {
     return this.services.map(s =>
                              <tr>
-                              <td>{s.charAt(0)}</td>
+                              <td>{this.makeIcon(s.charAt(0))}</td>
                               <td>{s}</td>
                              </tr>);
   }
@@ -37,7 +46,9 @@ export default class Legend extends Component {
     return (
         <div className="Legend">
          <table className="table">
-          {this.makeTable()}
+          <tbody>
+           {this.makeTable()}
+          </tbody>
          </table>
         </div>
     );

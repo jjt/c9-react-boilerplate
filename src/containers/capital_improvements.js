@@ -54,7 +54,7 @@ export default class CapitalImprovement extends Component {
             <div className="col-3"> 
              { this.ready() ? <Legend data={this.state.capital_improvement_data} /> : "" }
             </div>
-            <div className="col-4">
+            <div className="col-3">
               <div className="row"></div>
               <div className="row"></div>
             </div>

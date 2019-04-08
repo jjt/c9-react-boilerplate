@@ -27,8 +27,8 @@ svg {
     bottom: 10px;
 }
 
-.Legend svg {
-    position: fixed;
+.Legend table {
+    color: white;
 }
 
 .card {
@@ -71,6 +71,18 @@ div .cholorpleth {
 .map-text {
     cursor: pointer;
     font-size: 12px;
+    user-select: none;
+}
+
+.legend-point {
+    cursor: pointer;
+    stroke-width: 1;
+    stroke: #0f0f0f;
+}
+
+.legend-text {
+    cursor: pointer;
+    font-size: 6px;
     user-select: none;
 }
 
