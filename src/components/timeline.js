@@ -47,7 +47,7 @@ export default class Timeline extends Component {
     const new_g = svg.append("g").attr("transform", "translate(170,0)");
     
     new_g.append("g").attr("transform", "translate(0, 90)").call(axis);
-    
+     
     new_g.selectAll('rect')
       .data(timeData)
     .enter().append("rect")
@@ -57,7 +57,9 @@ export default class Timeline extends Component {
       .attr('height', function (d) { return timeRange(d.amount) })
       .attr('fill', function(d) { return improvementsScale(d.service)});
     
-    new_g.attr("class", "brush").call(d3.brushX().on("brush", null));
+    const brush = d3.brushX().extent([[-20, 0], [620, 90]]).on("brush", null);
+    new_g.attr("class", "brush").call(brush);
+
   }
 
   render() {
