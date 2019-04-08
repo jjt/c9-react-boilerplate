@@ -13,23 +13,22 @@ export default class Legend extends Component {
     /* Get the letters we use for the points on the map.
      * TODO: Not the fastest way of doing this. Maybe compute
      * this only in the map? */
-    let serviceIndicators = this.props.data
-      .map(d => d.charAt(0))
+    let services = this.props.data
+      .map(d => d.service)
       .reduce((a, c) => {
-        if (c !== a[a.length - 1]) {
+        if (c.toLowerCase() !== a[a.length - 1].toLowerCase()) {
           return a.push(c);
         } else {
           return a;
         }
       }, []);
 
-    return serviceIndicators;
+    return services;
   }
 
   render() {
     return (
         <div className="Legend">
-         <svg viewBox="0 0 300 300" preserveAspectRatio="xMidYMax meet"/>
         </div>
     );
   }
