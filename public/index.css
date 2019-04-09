@@ -46,6 +46,7 @@ svg {
     paint-order: stroke fill;
     stroke-width: 2;
     stroke: #0f0f0f;
+    transition: opacity 200ms;
 }
 
 div .cholorpleth {

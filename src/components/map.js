@@ -157,7 +157,6 @@ export default class Map extends Component {
         }
         tooltip.style("opacity", "0.0"); 
       })
-      .transition().delay(200)
       .attr('d', path)
       .attr('fill', function(d,i) {
         return colorScale(amountAllocated[i].value)
@@ -246,7 +245,6 @@ export default class Map extends Component {
     .enter().append("rect")
     .attr("x", 820)
     .attr("y", function(d,i) { return d })
-    .transition().delay(200)
     .attr("width", 50)
     .attr("height", 60)
     .attr("fill", function(d,i) {
