@@ -98,7 +98,7 @@ export default class Map extends Component {
     const path = d3.geoPath().projection(projection);  
     const data = (years !== undefined) ? years : this.props.data;
     const amountAllocated = this.districtAllocated(data);
-    const tooltip = d3.select(".Map div")
+    const infobox = d3.select("infobox");
     let selectedIndex = -1;
     
     const min_max = d3.extent(amountAllocated, function(d) {
@@ -144,10 +144,7 @@ export default class Map extends Component {
       })
       .on("mousemove", function(d,i){ 
         d3.select(this).attr("opacity", "0.8"); 
-        tooltip.html("<p>" + d.properties.name2 + ": " + formatter.format(amountAllocated[i].value) + "</p>")
-          .style("opacity", "1.0")
-          .style("left", d3.event.pageX - bounds.width/2 +"px")
-          .style("top", d3.event.pageY + "px");
+        infobox.html("<p>" + d.properties.name2 + ": " + formatter.format(amountAllocated[i].value) + "</p>")
       })
       .on("mouseout", function(d, i) {
         if (selectedIndex !== -1 && selectedIndex !== i) {
@@ -155,7 +152,6 @@ export default class Map extends Component {
         } else {
           d3.select(this).attr("opacity", "1.0"); 
         }
-        tooltip.style("opacity", "0.0"); 
       })
       .attr('d', path)
       .attr('fill', function(d,i) {
@@ -186,7 +182,7 @@ export default class Map extends Component {
       currency: 'USD',
     });
       
-    const tooltip = d3.select(".Map div");
+    const infobox = d3.select(".infobox");
     const years = this.parseYearData(year);
     const data = (years !== undefined) ? years : this.props.data;
     const districtPoints = this.parseDistrict(data, portion);
@@ -215,7 +211,7 @@ export default class Map extends Component {
         return improvementsScale(d.service);
       })
       .on("mousemove", function(d,i){
-        tooltip.html(
+        infobox.html(
           "<p> Title: " + d.title + "</p>" +
           "<p> Department: " + d.department + "</p>" +
           "<p> Amount: " + formatter.format(d.amount) + "</p>" +
@@ -223,10 +219,7 @@ export default class Map extends Component {
           "<p> Year: " + d.year + "</p>" +
           "<p> Location: " + d.location + "</p>" +
           "<p> Description: " + d.description + "</p>"
-        )
-          .style("opacity", "1.0")
-          .style("left", d3.event.pageX - bounds.width/2 +"px")
-          .style("top", d3.event.pageY + "px");
+        );
       });
   }
   
@@ -337,7 +330,6 @@ export default class Map extends Component {
     return (
       <div className="Map">
        <h2> Total Capital Improvements St. Paul </h2>
-       <div className="tooltip"></div>
        <svg viewBox="0 0 900 800" preserveAspectRatio="xMidYMax meet"/>
        <Timeline data={this.props.data} yearSelector={this.props.yearSelector}/>
       </div>

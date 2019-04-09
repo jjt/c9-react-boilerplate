@@ -56,12 +56,18 @@ export default class CapitalImprovement extends Component {
         <h1> St.Paul Capital Improvements </h1>
         <div className="container-fluid">
           <div className="row">
-            <div className="col-3"></div>
-            <div className="col-6">
-             { this.ready() ? (<Map geodata={this.state.district_map} data={this.state.capital_improvement_data} years={this.state.selectedYear} yearSelector={this.selectedYears}/>) : (<p className="loading"> Loading Map Data...</p>) }
+            <div className="col-3">
+              <div className="row">
+                <div className="col-12 infobox-container">
+                  <div className="infobox"></div>
+                </div>
+              </div>
+            </div>
+            <div className="col">
+              { this.ready() ? (<Map geodata={this.state.district_map} data={this.state.capital_improvement_data} years={this.state.selectedYear} yearSelector={this.selectedYears}/>) : (<p className="loading"> Loading Map Data...</p>) }
             </div> 
             <div className="col-3"> 
-             { this.ready() ? <Legend data={this.state.capital_improvement_data} /> : "" }
+              { this.ready() ? <Legend data={this.state.capital_improvement_data} /> : "" }
             </div>
           </div>
         </div>
