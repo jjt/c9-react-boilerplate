@@ -98,7 +98,7 @@ export default class Map extends Component {
     const path = d3.geoPath().projection(projection);  
     const data = (years !== undefined) ? years : this.props.data;
     const amountAllocated = this.districtAllocated(data);
-    const infobox = d3.select("infobox");
+    const infobox = d3.select(".infobox");
     let selectedIndex = -1;
     
     const min_max = d3.extent(amountAllocated, function(d) {
@@ -128,6 +128,8 @@ export default class Map extends Component {
         that.selectMap(d, projection, that.props.years);
         d3.select("body").on("keydown", function() {
           if(d3.event.key === "Escape"){
+            d3.select(".infobox")
+              .classed("infobox-hidden", true)
             that.unSelectMap();
             that.setState({ currentLocation: "update", portion: undefined, projection:undefined });
             selectedIndex = -1;
@@ -144,7 +146,6 @@ export default class Map extends Component {
       })
       .on("mousemove", function(d,i){ 
         d3.select(this).attr("opacity", "0.8"); 
-        infobox.html("<p>" + d.properties.name2 + ": " + formatter.format(amountAllocated[i].value) + "</p>")
       })
       .on("mouseout", function(d, i) {
         if (selectedIndex !== -1 && selectedIndex !== i) {
@@ -202,15 +203,15 @@ export default class Map extends Component {
     
     g.selectAll('circle')
       .data(districtPoints)
-    .enter().append('circle')
-      .attr("class", "map-point")
+      .enter().append('circle')
+      .classed("map-point", true)
       .attr("cx", function(d,i) { return projection([d.longitude, d.latitude])[0]; })
       .attr("cy", function(d,i) { return projection([d.longitude, d.latitude])[1]; })
       .attr("r", 7.5)
       .attr("fill", function(d,i) {
         return improvementsScale(d.service);
       })
-      .on("mousemove", function(d,i){
+      .on("click", function(d,i){
         infobox.html(
           "<p> Title: " + d.title + "</p>" +
           "<p> Department: " + d.department + "</p>" +
@@ -220,6 +221,7 @@ export default class Map extends Component {
           "<p> Location: " + d.location + "</p>" +
           "<p> Description: " + d.description + "</p>"
         );
+        infobox.classed("infobox-hidden", false);
       });
   }
   

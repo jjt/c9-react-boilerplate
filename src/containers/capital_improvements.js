@@ -59,7 +59,7 @@ export default class CapitalImprovement extends Component {
             <div className="col-3">
               <div className="row">
                 <div className="col-12 infobox-container">
-                  <div className="infobox"></div>
+                  <div className="infobox infobox-hidden"></div>
                 </div>
               </div>
             </div>

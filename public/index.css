@@ -81,6 +81,14 @@ div .cholorpleth {
     padding-right: 30px;
     overflow-y: scroll;
     box-sizing: content-box;
+    visibility: visible;
+    transition: opacity 500ms, width 500ms, visibility 500ms;
+}
+
+.infobox-hidden {
+    opacity: 0;
+    visibility: hidden;
+    width: 0;
 }
 
 .map-text {
@@ -91,7 +99,7 @@ div .cholorpleth {
 
 .legend-point {
     cursor: pointer;
-    stroke-width: 1;
+    stroke-width: 0.5;
     stroke: #0f0f0f;
 }
 
