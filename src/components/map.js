@@ -24,15 +24,16 @@ export default class Map extends Component {
   }
   
   componentDidUpdate(prevProps, prevState) {
-    if (this.props.years.length !== 0 && (this.props.years[0] !== prevProps.years[0] || this.props.years[0] !== prevProps.years[0])) {
+    if (this.props.years.length !== 0 && (this.props.years[0] !== prevProps.years[0] || this.props.years[1] !== prevProps.years[1])) {
       const years = this.parseYearData(this.props.years);
-      this.destroyMap();
       if (this.state.currentLocation === "create") {
+        this.destroyMap();
         this.createMap(years);
       } else  if (this.state.currentLocation === "update"){
+        this.destroyMap();
         this.updateMap(years);
       } else {
-        this.selectMap(this.state.portion, this.state.projection, years);
+        this.selectMap(this.state.portion, this.state.projection, this.props.years);
       }
     }
   }
@@ -124,7 +125,7 @@ export default class Map extends Component {
         selectedIndex = i;
         let centroid = path.centroid(d);
         that.setState({ currentLocation: "select", portion: d, projection:projection });
-        that.selectMap(d, projection);
+        that.selectMap(d, projection, that.props.years);
         d3.select("body").on("keydown", function() {
           if(d3.event.key === "Escape"){
             that.unSelectMap();
@@ -175,7 +176,7 @@ export default class Map extends Component {
   }
     
   // Set other paths to lower opacity.
-  selectMap(portion, projection, years) {
+  selectMap(portion, projection, year) {
     const bounds = d3.select(".Map svg").node().getBoundingClientRect();;
     const improvementsScale = d3.scaleOrdinal()
       .domain(['Community Facilities', 'Internal Service', 'Streets and Utilities', 'Residential and Economic Development'])
@@ -186,7 +187,8 @@ export default class Map extends Component {
       currency: 'USD',
     });
       
-    const tooltip = d3.select(".Map div")
+    const tooltip = d3.select(".Map div");
+    const years = this.parseYearData(year);
     const data = (years !== undefined) ? years : this.props.data;
     const districtPoints = this.parseDistrict(data, portion);
     const map = d3.select(".Map svg");
@@ -225,28 +227,6 @@ export default class Map extends Component {
         )
           .style("opacity", "1.0")
           .style("left", d3.event.pageX - bounds.width/2 +"px")
-          .style("top", d3.event.pageY + "px");
-      });
-    
-    g.selectAll('text')
-      .data(districtPoints)
-    .enter().append("text")
-      .attr("class", "map-text")
-      .attr("x", function(d,i) { return projection([d.longitude, d.latitude])[0] - 4.5; })
-      .attr("y", function(d,i) { return projection([d.longitude, d.latitude])[1] + 5; })
-      .text(function(d) { return d.service.charAt(0); })      
-      .on("mousemove", function(d,i){
-        tooltip.html(
-          "<p> Title: " + d.title + "</p>" +
-          "<p> Department: " + d.department + "</p>" +
-          "<p> Amount: " + formatter.format(d.amount) + "</p>" +
-          "<p> District: " + d.district + "</p>" +
-          "<p> Year: " + d.year + "</p>" +
-          "<p> Location: " + d.location + "</p>" +
-          "<p> Description: " + d.description + "</p>"
-        )
-          .style("opacity", "1.0")
-          .style("left", d3.event.pageX - bounds.width/2 + "px")
           .style("top", d3.event.pageY + "px");
       });
   }
@@ -327,7 +307,7 @@ export default class Map extends Component {
   }
   
   parseYearData(years) {
-    if (years.length !== 0) {
+    if (years !== undefined && years.length !== 0) {
       if (years[0] === 2003) {
         years[0] = 2004; 
       }
