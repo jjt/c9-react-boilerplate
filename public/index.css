@@ -21,9 +21,9 @@ svg {
 }
 
 .Timeline svg {
+    display: inline;
     background-color: rgba(35,31,31,.3);
     box-shadow: 2px 2px rgba(51,51,51,255);
-    position: absolute;
     bottom: 10px;
 }
 

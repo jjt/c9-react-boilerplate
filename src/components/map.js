@@ -11,20 +11,40 @@ export default class Map extends Component {
     this.selectMap = this.selectMap.bind(this);
     this.updateMap = this.updateMap.bind(this);
     this.districtAllocated = this.districtAllocated.bind(this);
+    this.state = {
+      currentLocation: "create",
+      portion: undefined,
+      projection: undefined
+    }
   }
   
   // Type check for data types passed into map.js then create map if correct.  
   componentDidMount() {
     this.createMap(); 
   }
+  
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.years.length !== 0 && (this.props.years[0] !== prevProps.years[0] || this.props.years[0] !== prevProps.years[0])) {
+      const years = this.parseYearData(this.props.years);
+      this.destroyMap();
+      if (this.state.currentLocation === "create") {
+        this.createMap(years);
+      } else  if (this.state.currentLocation === "update"){
+        this.updateMap(years);
+      } else {
+        this.selectMap(this.state.portion, this.state.projection, years);
+      }
+    }
+  }
 
-  createMap() {
+  createMap(years) {
     const that = this;
     const map = d3.select(".Map svg");
     const projection = d3.geoMercator().fitSize([900, 800], this.props.geodata);
     const path = d3.geoPath()
       .projection(projection);  
-    const amountAllocated = this.districtAllocated();
+    const data = (years !== undefined) ? years : this.props.data;
+    const amountAllocated = this.districtAllocated(data);
     
     let sum = 0;
     
@@ -46,6 +66,7 @@ export default class Map extends Component {
       .attr("class", "map-piece")
       .attr('fill', "rgb(102,178,255)")
       .on("click", function() {
+        that.setState({ currentLocation: "update" });
         that.destroyMap();
         that.updateMap();
       })
@@ -68,12 +89,14 @@ export default class Map extends Component {
       .attr("y", 325);       
   }
 
-  updateMap() {
+  updateMap(years) {
     const that = this;
     const map = d3.select(".Map svg");
+    const bounds = map.node().getBoundingClientRect();;
     const projection = d3.geoMercator().fitSize([800, 800], this.props.geodata);
     const path = d3.geoPath().projection(projection);  
-    const amountAllocated = this.districtAllocated();
+    const data = (years !== undefined) ? years : this.props.data;
+    const amountAllocated = this.districtAllocated(data);
     const tooltip = d3.select(".Map div")
     let selectedIndex = -1;
     
@@ -100,11 +123,12 @@ export default class Map extends Component {
       .on("click", function(d,i){
         selectedIndex = i;
         let centroid = path.centroid(d);
+        that.setState({ currentLocation: "select", portion: d, projection:projection });
         that.selectMap(d, projection);
-
         d3.select("body").on("keydown", function() {
           if(d3.event.key === "Escape"){
             that.unSelectMap();
+            that.setState({ currentLocation: "update", portion: undefined, projection:undefined });
             selectedIndex = -1;
             g.transition()
               .duration(750)
@@ -121,8 +145,8 @@ export default class Map extends Component {
         d3.select(this).attr("opacity", "0.8"); 
         tooltip.html("<p>" + d.properties.name2 + ": " + formatter.format(amountAllocated[i].value) + "</p>")
           .style("opacity", "1.0")
-          .style("left", d3.event.pageX - 475 + "px")
-          .style("top", d3.event.pageY - 100 + "px");
+          .style("left", d3.event.pageX - bounds.width/2 +"px")
+          .style("top", d3.event.pageY + "px");
       })
       .on("mouseout", function(d, i) {
         if (selectedIndex !== -1 && selectedIndex !== i) {
@@ -151,7 +175,8 @@ export default class Map extends Component {
   }
     
   // Set other paths to lower opacity.
-  selectMap(portion, projection) {
+  selectMap(portion, projection, years) {
+    const bounds = d3.select(".Map svg").node().getBoundingClientRect();;
     const improvementsScale = d3.scaleOrdinal()
       .domain(['Community Facilities', 'Internal Service', 'Streets and Utilities', 'Residential and Economic Development'])
       .range(['#a6cee3', '#1f78b4', '#b2df8a', '#33a02c']);
@@ -162,11 +187,10 @@ export default class Map extends Component {
     });
       
     const tooltip = d3.select(".Map div")
-    const districtPoints = this.parseDistrict(this.props.data, portion);
+    const data = (years !== undefined) ? years : this.props.data;
+    const districtPoints = this.parseDistrict(data, portion);
     const map = d3.select(".Map svg");
     let g = map.select('g');
-    
-    console.log(d3.selectAll('path'));
     
     d3.selectAll('path')
     .attr("opacity",function(d,i) {
@@ -200,8 +224,8 @@ export default class Map extends Component {
           "<p> Description: " + d.description + "</p>"
         )
           .style("opacity", "1.0")
-          .style("left", d3.event.pageX + "px")
-          .style("top", d3.event.pageY - 175 + "px");
+          .style("left", d3.event.pageX - bounds.width/2 +"px")
+          .style("top", d3.event.pageY + "px");
       });
     
     g.selectAll('text')
@@ -222,14 +246,14 @@ export default class Map extends Component {
           "<p> Description: " + d.description + "</p>"
         )
           .style("opacity", "1.0")
-          .style("left", d3.event.pageX + "px")
-          .style("top", d3.event.pageY - 175 + "px");
+          .style("left", d3.event.pageX - bounds.width/2 + "px")
+          .style("top", d3.event.pageY + "px");
       });
   }
   
   destroyMap() {
     const svg = d3.select(".Map svg");
-    let g = svg.select("g").transition().style("opacity", 0);
+    let g = svg.selectAll("g").transition().style("opacity", 0);
     g.remove();
   }
   
@@ -265,7 +289,7 @@ export default class Map extends Component {
     
   }
   
-  districtAllocated() {
+  districtAllocated(data) {
     // TODO: Redo district amount.
     let districtAmount = [
       {name:"1",value:0},{name:"2",value:0},{name:"3",value:0},{name:"4",value:0},{name:"5",value:0},{name:"6",value:0},{name:"7",value:0},{name:"8",value:0},{name:"9",value:0},{name:"10",value:0},{name:"11",value:0},{name:"12",value:0},{name:"13",value:0},{name:"14",value:0},{name:"15",value:0},{name:"16",value:0},{name:"17",value:0},{name:"Citywide",value:0}
@@ -275,7 +299,7 @@ export default class Map extends Component {
       "1":0,"2":1,"3":2,"4":3,"5":4,"6":5,"7":6,"8":7,"9":8,"10":9,"11":10,"12":11,"13":12,"14":13,"15":14,"16":15,"17":16,"Citywide":17,
     }
     
-    const financialData = this.props.data;
+    const financialData = data;
     for (let i = 0; i < financialData.length; i++) {
       let districts = financialData[i].district.split(",");
       for (let c = 0; c < districts.length;  c++) {
@@ -302,13 +326,42 @@ export default class Map extends Component {
     return districtData;
   }
   
+  parseYearData(years) {
+    if (years.length !== 0) {
+      if (years[0] === 2003) {
+        years[0] = 2004; 
+      }
+      if (years[0] === 2020) {
+        years[0] = 2019;
+      }
+      if (years[1] === 2003) {
+        years[1] = 2004; 
+      }
+      if (years[1] === 2020) {
+        years[1] = 2019;
+      }
+      
+      let i = years[0];
+      let yearlyData = [];
+      while (i <= years[1]) {
+        for (let x = 0; x < this.props.data.length; x++) {
+          if(parseInt(this.props.data[x].year) === i) {
+            yearlyData.push(this.props.data[x]);
+          }
+        }
+        i++;
+      }
+      return yearlyData;
+    }
+  }
+  
   render() {
     return (
       <div className="Map">
        <h2> Total Capital Improvements St. Paul </h2>
        <svg viewBox="0 0 900 800" preserveAspectRatio="xMidYMax meet"/>
        <div className="tooltip"></div>
-       <Timeline data={this.props.data}/>
+       <Timeline data={this.props.data} yearSelector={this.props.yearSelector}/>
       </div>
     );
   }

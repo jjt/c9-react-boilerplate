@@ -8,9 +8,11 @@ export default class CapitalImprovement extends Component {
   constructor(props) {
     super(props);
     this.loadData = this.loadData.bind(this);
+    this.selectedYears = this.selectedYears.bind(this);
     this.state = {
         district_map: [],
-        capital_improvement_data: []
+        capital_improvement_data: [],
+        selectedYear: []
     }
   }
   
@@ -19,6 +21,7 @@ export default class CapitalImprovement extends Component {
   }
   
   componentDidUpdate() {
+    
   }
   
   loadData() {
@@ -32,8 +35,14 @@ export default class CapitalImprovement extends Component {
     d3.json("https://information.stpaul.gov/api/geospatial/dq4n-yj8b?method=export&format=GeoJSON").then(function(data) {
       that.setState({
         district_map: data
-      })
+      });
     });
+  }
+  
+  selectedYears(extent) {
+    this.setState({
+      selectedYear: extent
+    })
   }
 
   ready() {
@@ -49,14 +58,10 @@ export default class CapitalImprovement extends Component {
           <div className="row">
             <div className="col-3"></div>
             <div className="col-6">
-             { this.ready() ? (<Map geodata={this.state.district_map} data={this.state.capital_improvement_data}/>) : (<p className="loading"> Loading Map Data...</p>) }
+             { this.ready() ? (<Map geodata={this.state.district_map} data={this.state.capital_improvement_data} years={this.state.selectedYear} yearSelector={this.selectedYears}/>) : (<p className="loading"> Loading Map Data...</p>) }
             </div> 
             <div className="col-3"> 
              { this.ready() ? <Legend data={this.state.capital_improvement_data} /> : "" }
-            </div>
-            <div className="col-3">
-              <div className="row"></div>
-              <div className="row"></div>
             </div>
           </div>
         </div>
