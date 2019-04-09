@@ -54,7 +54,7 @@ export default class CapitalImprovement extends Component {
     return (
       <div className="CapitalImprovement">
         <h1> St.Paul Capital Improvements </h1>
-        <div className="fluid-container">
+        <div className="container-fluid">
           <div className="row">
             <div className="col-3"></div>
             <div className="col-6">

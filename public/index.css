@@ -20,6 +20,13 @@ svg {
     margin: 0 auto;
 }
 
+.Timeline {
+    position: fixed;
+    bottom: 0;
+    right: 25%;
+    left: 25%;
+}
+
 .Timeline svg {
     display: inline;
     background-color: rgba(35,31,31,.3);
