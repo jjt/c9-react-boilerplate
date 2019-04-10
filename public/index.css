@@ -32,6 +32,7 @@ svg {
     background-color: rgba(35,31,31,.3);
     box-shadow: 2px 2px rgba(51,51,51,255);
     bottom: 10px;
+    height: 125px;
 }
 
 .Legend table {
@@ -76,19 +77,20 @@ div .cholorpleth {
     border-color: #262626;
     color: white;
     width: 100%;
+    height: 100%;
     height: calc(100vh - 100px);
     padding: 15px;
     padding-right: 30px;
     overflow-y: scroll;
     box-sizing: content-box;
     visibility: visible;
-    transition: opacity 500ms, width 500ms, visibility 500ms;
+    transition: opacity 500ms, height 500ms, visibility 500ms;
 }
 
 .infobox-hidden {
     opacity: 0;
     visibility: hidden;
-    width: 0;
+    height: 0;
 }
 
 .map-text {

@@ -129,7 +129,7 @@ export default class Map extends Component {
         d3.select("body").on("keydown", function() {
           if(d3.event.key === "Escape"){
             d3.select(".infobox")
-              .classed("infobox-hidden", true)
+	      .classed("infobox-hidden", true);
             that.unSelectMap();
             that.setState({ currentLocation: "update", portion: undefined, projection:undefined });
             selectedIndex = -1;
