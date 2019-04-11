@@ -331,7 +331,6 @@ export default class Map extends Component {
   render() {
     return (
       <div className="Map">
-       <h2> Total Capital Improvements St. Paul </h2>
        <svg viewBox="0 0 900 800" preserveAspectRatio="xMidYMax meet"/>
        <Timeline data={this.props.data} yearSelector={this.props.yearSelector}/>
       </div>

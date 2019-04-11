@@ -20,6 +20,10 @@ svg {
     margin: 0 auto;
 }
 
+.hud-ui {
+    padding: 20px;
+}
+
 .Timeline {
     position: fixed;
     bottom: 0;
@@ -37,20 +41,34 @@ svg {
 
 .Legend table {
     color: white;
+    backface-visibility: ;
 }
 
 .card {
     background-color: rgba(35,31,31,.51);
 }
 
+.Map {
+    position: fixed;
+}
+
+.Map > svg { 
+    height: 100vh;
+}
+
 .map-point {
     cursor: pointer;
     stroke-width: 1;
     stroke: #0f0f0f;
+    transition: stroke-width 200ms;
+}
+
+.map-point:hover {
+    stroke-width: 2;
 }
 
 .map-selected {
-    stroke-width: 2px;
+    stroke-width: 4;
 }
 
 .map-piece {
@@ -91,6 +109,10 @@ div .cholorpleth {
     opacity: 0;
     visibility: hidden;
     height: 0;
+}
+
+.spacer {
+    pointer-events: none;
 }
 
 .map-text {
