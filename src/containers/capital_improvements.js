@@ -15,15 +15,15 @@ export default class CapitalImprovement extends Component {
         selectedYear: []
     }
   }
-  
+
   componentDidMount() {
     this.loadData();
   }
-  
+
   componentDidUpdate() {
-    
+
   }
-  
+
   loadData() {
     const that = this;
     d3.csv("https://raw.githubusercontent.com/davimchun45/datasets/master/capital_budgets_improvements.csv").then(function(data) {
@@ -31,14 +31,14 @@ export default class CapitalImprovement extends Component {
         capital_improvement_data: data
       });
     });
-    
+
     d3.json("https://information.stpaul.gov/api/geospatial/dq4n-yj8b?method=export&format=GeoJSON").then(function(data) {
       that.setState({
         district_map: data
       });
     });
   }
-  
+
   selectedYears(extent) {
     this.setState({
       selectedYear: extent
@@ -49,7 +49,7 @@ export default class CapitalImprovement extends Component {
     return this.state.district_map.length === undefined
       && this.state.capital_improvement_data.length !== 0;
   }
-    
+
   render() {
     return (
       <div className="CapitalImprovement">
@@ -64,9 +64,9 @@ export default class CapitalImprovement extends Component {
               </div>
             </div>
             <div className="col-6 spacer">
-              <h1>St.Paul Capital Improvements</h1>
-            </div> 
-            <div className="col-3"> 
+              <h1 className="app-title">St.Paul Capital Improvements</h1>
+            </div>
+            <div className="col-3">
               { this.ready() ? <Legend data={this.state.capital_improvement_data} /> : "" }
             </div>
           </div>

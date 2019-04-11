@@ -10,6 +10,10 @@ text {
     font-size: 24px;
 }
 
+h1.app-title {
+    text-shadow: black 0 0 10px;
+}
+
 h2 {
     display: inline;
     margin: 5px;
@@ -26,22 +30,20 @@ svg {
 
 .Timeline {
     position: fixed;
-    bottom: 0;
-    right: 25%;
-    left: 25%;
+    bottom: 10px;
+    height: 125px;
+    width: 100%;
 }
 
 .Timeline svg {
     display: inline;
     background-color: rgba(35,31,31,.3);
     box-shadow: 2px 2px rgba(51,51,51,255);
-    bottom: 10px;
     height: 125px;
 }
 
 .Legend table {
     color: white;
-    backface-visibility: ;
 }
 
 .card {
@@ -50,9 +52,11 @@ svg {
 
 .Map {
     position: fixed;
+    margin: 0 auto;
+    left: 25vw;
 }
 
-.Map > svg { 
+.Map > svg {
     height: 100vh;
 }
 
@@ -103,6 +107,7 @@ div .cholorpleth {
     box-sizing: content-box;
     visibility: visible;
     transition: opacity 500ms, height 500ms, visibility 500ms;
+    pointer-events: auto;
 }
 
 .infobox-hidden {
@@ -111,7 +116,7 @@ div .cholorpleth {
     height: 0;
 }
 
-.spacer {
+.hud-ui {
     pointer-events: none;
 }
 
