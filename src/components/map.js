@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import * as d3 from 'd3';
+import L from 'leaflet';
 
 import Timeline from './timeline.js';
 
@@ -39,6 +40,27 @@ export default class Map extends Component {
   }
 
   createMap(years) {
+    const setupOSM = (features) => {
+      let osmMap =
+          L.map("osm-map",
+                {
+                  zoomControl: false,
+                  boxZoom: false,
+                })
+          .setView([44.94, -93.10], 13);
+      let datalayer = L.geoJSON().addTo(osmMap);
+      datalayer.addData(features);
+
+      /* TODO: Don't use OSM's tile server. It is not intended for this. */
+      L.tileLayer('https://a.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.',
+        minZoom: 13,
+        maxZoom: 15
+      }).addTo(osmMap);
+    };
+
+    setupOSM(this.props.geodata.features);
+
     const that = this;
     const map = d3.select(".Map svg");
     const projection = d3.geoMercator().fitSize([900, 800], this.props.geodata);
@@ -117,47 +139,47 @@ export default class Map extends Component {
 
     let g = map.append("g");
 
-    g.append("g").selectAll('path')
-      .data(this.props.geodata.features)
-    .enter().append('path')
-      .attr("class", "map-piece")
-      .on("click", function(d,i){
-        selectedIndex = i;
-        let centroid = path.centroid(d);
-        that.setState({ currentLocation: "select", portion: d, projection:projection });
-        that.selectMap(d, projection, that.props.years);
-        d3.select("body").on("keydown", function() {
-          if(d3.event.key === "Escape"){
-            d3.select(".infobox")
-	      .classed("infobox-hidden", true);
-            that.unSelectMap();
-            that.setState({ currentLocation: "update", portion: undefined, projection:undefined });
-            selectedIndex = -1;
-            g.transition()
-              .duration(750)
-              .attr("transform", "translate(" + 900 / 2 + "," + 900 / 2 + ")scale(" + 1 + ")translate(" + -450 + "," + -450 + ")");
-          }
-        });
+    // g.append("g").selectAll('path')
+    //   .data(this.props.geodata.features)
+    // .enter().append('path')
+    //   .attr("class", "map-piece")
+    //   .on("click", function(d,i){
+    //     selectedIndex = i;
+    //     let centroid = path.centroid(d);
+    //     that.setState({ currentLocation: "select", portion: d, projection:projection });
+    //     that.selectMap(d, projection, that.props.years);
+    //     d3.select("body").on("keydown", function() {
+    //       if(d3.event.key === "Escape"){
+    //         d3.select(".infobox")
+    // 	      .classed("infobox-hidden", true);
+    //         that.unSelectMap();
+    //         that.setState({ currentLocation: "update", portion: undefined, projection:undefined });
+    //         selectedIndex = -1;
+    //         g.transition()
+    //           .duration(750)
+    //           .attr("transform", "translate(" + 900 / 2 + "," + 900 / 2 + ")scale(" + 1 + ")translate(" + -450 + "," + -450 + ")");
+    //       }
+    //     });
 
-        g.transition()
-          .duration(750)
-          .attr("transform", "translate(" + 900 / 2 + "," + 900 / 2 + ")scale(" + 2 + ")translate(" + -centroid[0] + "," + -centroid[1] + ")");
+    //     g.transition()
+    //       .duration(750)
+    //       .attr("transform", "translate(" + 900 / 2 + "," + 900 / 2 + ")scale(" + 2 + ")translate(" + -centroid[0] + "," + -centroid[1] + ")");
 
-      })
-      .on("mousemove", function(d,i){
-        d3.select(this).attr("opacity", "0.8");
-      })
-      .on("mouseout", function(d, i) {
-        if (selectedIndex !== -1 && selectedIndex !== i) {
-          d3.select(this).attr("opacity", "0.3");
-        } else {
-          d3.select(this).attr("opacity", "1.0");
-        }
-      })
-      .attr('d', path)
-      .attr('fill', function(d,i) {
-        return colorScale(amountAllocated[i].value)
-      });
+    //   })
+    //   .on("mousemove", function(d,i){
+    //     d3.select(this).attr("opacity", "0.8");
+    //   })
+    //   .on("mouseout", function(d, i) {
+    //     if (selectedIndex !== -1 && selectedIndex !== i) {
+    //       d3.select(this).attr("opacity", "0.3");
+    //     } else {
+    //       d3.select(this).attr("opacity", "1.0");
+    //     }
+    //   })
+    //   .attr('d', path)
+    //   .attr('fill', function(d,i) {
+    //     return colorScale(amountAllocated[i].value)
+    //   });
 
       this.colorScale(g, min_max);
   }
@@ -329,8 +351,8 @@ export default class Map extends Component {
   render() {
     return (
       <div className="Map">
-       <svg viewBox="0 0 900 800" preserveAspectRatio="xMidYMax meet"/>
-       <Timeline data={this.props.data} yearSelector={this.props.yearSelector}/>
+        <svg viewBox="0 0 900 800" preserveAspectRatio="xMidYMax meet"/>
+        <Timeline data={this.props.data} yearSelector={this.props.yearSelector}/>
       </div>
     );
   }

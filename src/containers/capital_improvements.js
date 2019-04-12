@@ -54,6 +54,7 @@ export default class CapitalImprovement extends Component {
     return (
       <div className="CapitalImprovement">
         { this.ready() ? (<Map geodata={this.state.district_map} data={this.state.capital_improvement_data} years={this.state.selectedYear} yearSelector={this.selectedYears}/>) : (<p className="loading"> Loading Map Data...</p>) }
+	<div id="osm-map"></div>
         <div className="container-fluid hud-ui">
           <div className="row">
             <div className="col-3">

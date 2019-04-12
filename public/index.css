@@ -11,7 +11,7 @@ text {
 }
 
 h1.app-title {
-    text-shadow: black 0 0 10px;
+    text-shadow: black 0 0 5px;
 }
 
 h2 {
@@ -54,10 +54,18 @@ svg {
     position: fixed;
     margin: 0 auto;
     left: 25vw;
+    z-index: 1;
 }
 
 .Map > svg {
     height: 100vh;
+}
+
+#osm-map {
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    z-index: 0;
 }
 
 .map-point {
