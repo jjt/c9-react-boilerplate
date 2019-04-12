@@ -64,6 +64,8 @@ export default class Map extends Component {
         minZoom: 13,
         maxZoom: 15
       }).addTo(osmMap);
+
+      this.osmMap = osmMap;
     };
 
     setupOSM(this.props.geodata.features);
@@ -84,7 +86,9 @@ export default class Map extends Component {
       currency: 'USD',
     });
 
-    d3.selectAll("#osm-map path").classed("map-piece", true);
+    d3.select("#osm-map").selectAll("path")
+      .classed("map-piece", true)
+      .data(this.props.geodata.features);
     this.updateMap();
   }
 
@@ -145,6 +149,7 @@ export default class Map extends Component {
 
   // Set other paths to lower opacity.
   selectMap(portion, projection, year) {
+    let that = this;
     const bounds = d3.select(".Map svg").node().getBoundingClientRect();;
     const improvementsScale = d3.scaleOrdinal()
       .domain(['Community Facilities', 'Internal Service', 'Streets and Utilities', 'Residential and Economic Development'])
@@ -169,8 +174,8 @@ export default class Map extends Component {
       .data(districtPoints)
       .enter().append('circle')
       .classed("map-point", true)
-      .attr("cx", function(d,i) { return projection([d.longitude, d.latitude])[0]; })
-      .attr("cy", function(d,i) { return projection([d.longitude, d.latitude])[1]; })
+      .attr("cx", (d, i) => that.osmMap.latLngToLayerPoint({lat: d.latitude, lon: d.longitude}).x)
+      .attr("cy", (d, i) => that.osmMap.latLngToLayerPoint({lat: d.latitude, lon: d.longitude}).y)
       .attr("r", 7.5)
       .attr("fill", function(d,i) {
         return improvementsScale(d.service);
