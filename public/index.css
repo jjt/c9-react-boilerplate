@@ -26,6 +26,7 @@ svg {
 
 .hud-ui {
     padding: 20px;
+    z-index: 100;
 }
 
 .Timeline {
@@ -44,6 +45,13 @@ svg {
 
 .Legend table {
     color: white;
+    pointer-events: auto;
+    opacity: 1;
+    transition: opacity 250ms;
+}
+
+.Legend:hover {
+    opacity: 0.5;
 }
 
 .card {
@@ -53,8 +61,7 @@ svg {
 .Map {
     position: fixed;
     margin: 0 auto;
-    left: 25vw;
-    z-index: 1;
+    z-index: 0;
 }
 
 .Map > svg {
@@ -86,10 +93,16 @@ svg {
 .map-piece {
     cursor: pointer;
     paint-order: stroke fill;
-    stroke-width: 2;
+    stroke-width: 3;
     stroke: #0f0f0f;
-    transition: opacity 200ms;
+    fill-opacity: 0.5;
+    transition: stroke-width 200ms;
 }
+
+.map-piece:hover {
+    stroke-width: 6;
+}
+
 
 div .cholorpleth {
     margin: 0 auto;

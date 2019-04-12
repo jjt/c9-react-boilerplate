@@ -54,20 +54,19 @@ export default class CapitalImprovement extends Component {
     return (
       <div className="CapitalImprovement">
         { this.ready() ? (<Map geodata={this.state.district_map} data={this.state.capital_improvement_data} years={this.state.selectedYear} yearSelector={this.selectedYears}/>) : (<p className="loading"> Loading Map Data...</p>) }
-	<div id="osm-map"></div>
         <div className="container-fluid hud-ui">
           <div className="row">
-            <div className="col-3">
+            <div className="col-3 col-xl-2">
               <div className="row">
                 <div className="col-12 infobox-container">
                   <div className="infobox infobox-hidden"></div>
                 </div>
               </div>
             </div>
-            <div className="col-6 spacer">
+            <div className="col-6 col-xl-8 spacer">
               <h1 className="app-title">St.Paul Capital Improvements</h1>
             </div>
-            <div className="col-3">
+            <div className="col-3 col-xl-2">
               { this.ready() ? <Legend data={this.state.capital_improvement_data} /> : "" }
             </div>
           </div>

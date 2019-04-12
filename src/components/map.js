@@ -44,12 +44,19 @@ export default class Map extends Component {
       let osmMap =
           L.map("osm-map",
                 {
+                  dragging: false,
                   zoomControl: false,
                   boxZoom: false,
+                  doubleClickZoom: false,
+                  scrollWheelZoom: false,
+                  zoomDelta: 0
                 })
           .setView([44.94, -93.10], 13);
-      let datalayer = L.geoJSON().addTo(osmMap);
-      datalayer.addData(features);
+      let datalayer = L.geoJSON(features, {
+        style: (feature) => {
+          return {fillOpacity: 1}
+        }
+      }).addTo(osmMap);
 
       /* TODO: Don't use OSM's tile server. It is not intended for this. */
       L.tileLayer('https://a.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -62,10 +69,7 @@ export default class Map extends Component {
     setupOSM(this.props.geodata.features);
 
     const that = this;
-    const map = d3.select(".Map svg");
-    const projection = d3.geoMercator().fitSize([900, 800], this.props.geodata);
-    const path = d3.geoPath()
-      .projection(projection);
+    const map = d3.select("#osm-map svg");
     const data = (years !== undefined) ? years : this.props.data;
     const amountAllocated = this.districtAllocated(data);
 
@@ -80,41 +84,13 @@ export default class Map extends Component {
       currency: 'USD',
     });
 
-    let g = map.append("g");
-
-    g.append('g').selectAll('path')
-      .data(this.props.geodata.features)
-    .enter().append('path')
-      .attr('d', path)
-      .attr("class", "map-piece")
-      .attr('fill', "rgb(102,178,255)")
-      .on("click", function() {
-        that.setState({ currentLocation: "update" });
-        that.destroyMap();
-        that.updateMap();
-      })
-      .on("mouseover", function(){
-        d3.selectAll('path').attr("opacity", "0.8");
-      })
-      .on("mouseout", function() {
-        d3.selectAll('path').attr("opacity", "1.0");
-      });
-
-    g.append("text")
-      .text(formatter.format(sum))
-      .attr("fill", "white")
-      .attr("x", 390)
-      .attr("y", 300);
-    g.append("text")
-      .text("(Click Me)")
-      .attr("fill", "white")
-      .attr("x", 425)
-      .attr("y", 325);
+    d3.selectAll("#osm-map path").classed("map-piece", true);
+    this.updateMap();
   }
 
   updateMap(years) {
     const that = this;
-    const map = d3.select(".Map svg");
+    const map = d3.select("#osm-map svg");
     const bounds = map.node().getBoundingClientRect();;
     const projection = d3.geoMercator().fitSize([800, 800], this.props.geodata);
     const path = d3.geoPath().projection(projection);
@@ -137,51 +113,25 @@ export default class Map extends Component {
       currency: 'USD',
     });
 
-    let g = map.append("g");
-
-    // g.append("g").selectAll('path')
-    //   .data(this.props.geodata.features)
-    // .enter().append('path')
-    //   .attr("class", "map-piece")
-    //   .on("click", function(d,i){
-    //     selectedIndex = i;
-    //     let centroid = path.centroid(d);
-    //     that.setState({ currentLocation: "select", portion: d, projection:projection });
-    //     that.selectMap(d, projection, that.props.years);
-    //     d3.select("body").on("keydown", function() {
-    //       if(d3.event.key === "Escape"){
-    //         d3.select(".infobox")
-    // 	      .classed("infobox-hidden", true);
-    //         that.unSelectMap();
-    //         that.setState({ currentLocation: "update", portion: undefined, projection:undefined });
-    //         selectedIndex = -1;
-    //         g.transition()
-    //           .duration(750)
-    //           .attr("transform", "translate(" + 900 / 2 + "," + 900 / 2 + ")scale(" + 1 + ")translate(" + -450 + "," + -450 + ")");
-    //       }
-    //     });
-
-    //     g.transition()
-    //       .duration(750)
-    //       .attr("transform", "translate(" + 900 / 2 + "," + 900 / 2 + ")scale(" + 2 + ")translate(" + -centroid[0] + "," + -centroid[1] + ")");
-
-    //   })
-    //   .on("mousemove", function(d,i){
-    //     d3.select(this).attr("opacity", "0.8");
-    //   })
-    //   .on("mouseout", function(d, i) {
-    //     if (selectedIndex !== -1 && selectedIndex !== i) {
-    //       d3.select(this).attr("opacity", "0.3");
-    //     } else {
-    //       d3.select(this).attr("opacity", "1.0");
-    //     }
-    //   })
-    //   .attr('d', path)
-    //   .attr('fill', function(d,i) {
-    //     return colorScale(amountAllocated[i].value)
-    //   });
-
-      this.colorScale(g, min_max);
+    d3.selectAll("#osm-map path")
+      .on("click", function(d,i){
+        selectedIndex = i;
+        let centroid = path.centroid(d);
+        that.setState({ currentLocation: "select", portion: d, projection:projection });
+        that.selectMap(d, projection, that.props.years);
+        d3.select("body").on("keydown", function() {
+          if(d3.event.key === "Escape"){
+            d3.select(".infobox")
+    	      .classed("infobox-hidden", true);
+            that.unSelectMap();
+            that.setState({ currentLocation: "update", portion: undefined, projection:undefined });
+            selectedIndex = -1;
+          }
+        });
+      })
+      .attr('fill', function(d,i) {
+        return colorScale(amountAllocated[i].value)
+      });
   }
 
   unSelectMap() {
@@ -209,16 +159,8 @@ export default class Map extends Component {
     const years = this.parseYearData(year);
     const data = (years !== undefined) ? years : this.props.data;
     const districtPoints = this.parseDistrict(data, portion);
-    const map = d3.select(".Map svg");
+    const map = d3.select("#osm-map");
     let g = map.select('g');
-
-    d3.selectAll('path')
-    .attr("opacity",function(d,i) {
-      if (d !== null && d.properties.district !== portion.properties.district) {
-        return 0.3;
-      }
-      return 1;
-    });
 
     g.selectAll('.map-point').remove();
     g.selectAll('.map-text').remove();
@@ -351,6 +293,7 @@ export default class Map extends Component {
   render() {
     return (
       <div className="Map">
+	<div id="osm-map"></div>
         <svg viewBox="0 0 900 800" preserveAspectRatio="xMidYMax meet"/>
         <Timeline data={this.props.data} yearSelector={this.props.yearSelector}/>
       </div>
