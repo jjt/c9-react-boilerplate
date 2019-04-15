@@ -30,7 +30,7 @@ export default class Map extends Component {
       if (this.state.currentLocation === "create") {
         this.destroyMap();
         this.createMap(years);
-      } else  if (this.state.currentLocation === "update"){
+      } else if (this.state.currentLocation === "update") {
         this.destroyMap();
         this.updateMap(years);
       } else {
@@ -40,19 +40,21 @@ export default class Map extends Component {
   }
 
   createMap(years) {
+    const that = this;
     const setupOSM = (features) => {
       let osmMap =
           L.map("osm-map",
                 {
-                  dragging: false,
+                  //dragging: false,
                   zoomControl: false,
                   boxZoom: false,
                   doubleClickZoom: false,
-                  scrollWheelZoom: false,
+                  //scrollWheelZoom: false,
                   zoomDelta: 0
                 })
           .setView([44.94, -93.10], 13);
-      let datalayer = L.geoJSON(features, {
+
+      L.geoJSON(features, {
         style: (feature) => {
           return {fillOpacity: 1}
         }
@@ -65,12 +67,12 @@ export default class Map extends Component {
         maxZoom: 15
       }).addTo(osmMap);
 
+      osmMap.on("viewreset", that.updateMap);
       this.osmMap = osmMap;
     };
 
     setupOSM(this.props.geodata.features);
 
-    const that = this;
     const map = d3.select("#osm-map svg");
     const data = (years !== undefined) ? years : this.props.data;
     const amountAllocated = this.districtAllocated(data);
@@ -170,26 +172,26 @@ export default class Map extends Component {
     g.selectAll('.map-point').remove();
     g.selectAll('.map-text').remove();
 
-    g.selectAll('circle')
-      .data(districtPoints)
-      .enter().append('circle')
-      .classed("map-point", true)
-      .attr("cx", (d, i) => that.osmMap.latLngToLayerPoint({lat: d.latitude, lon: d.longitude}).x)
-      .attr("cy", (d, i) => that.osmMap.latLngToLayerPoint({lat: d.latitude, lon: d.longitude}).y)
-      .attr("r", 7.5)
-      .attr("fill", function(d,i) {
-        return improvementsScale(d.service);
-      })
-      .on("click", function(d,i){
-        infobox.html("<p> Title: " + d.title + "</p>" +
-                     "<p> Department: " + d.department + "</p>" +
-                     "<p> Amount: " + formatter.format(d.amount) + "</p>" +
-                     "<p> District: " + d.district + "</p>" +
-                     "<p> Year: " + d.year + "</p>" +
-                     "<p> Location: " + d.location + "</p>" +
-                     "<p> Description: " + d.description + "</p>")
-          .classed("infobox-hidden", false);
-      });
+    let pts = g.selectAll('circle')
+        .data(districtPoints)
+        .enter().append('circle')
+        .classed("map-point", true)
+        .attr("cx", (d, i) => that.osmMap.latLngToLayerPoint({lat: d.latitude, lon: d.longitude}).x)
+        .attr("cy", (d, i) => that.osmMap.latLngToLayerPoint({lat: d.latitude, lon: d.longitude}).y)
+        .attr("r", 7.5)
+        .attr("fill", function(d,i) {
+          return improvementsScale(d.service);
+        })
+        .on("click", function(d,i){
+          infobox.html("<p> Title: " + d.title + "</p>" +
+                       "<p> Department: " + d.department + "</p>" +
+                       "<p> Amount: " + formatter.format(d.amount) + "</p>" +
+                       "<p> District: " + d.district + "</p>" +
+                       "<p> Year: " + d.year + "</p>" +
+                       "<p> Location: " + d.location + "</p>" +
+                       "<p> Description: " + d.description + "</p>")
+            .classed("infobox-hidden", false);
+        });
   }
 
   destroyMap() {

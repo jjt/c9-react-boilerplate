@@ -80,6 +80,7 @@ svg {
     stroke-width: 1;
     stroke: #0f0f0f;
     transition: stroke-width 200ms;
+    pointer-events: auto;
 }
 
 .map-point:hover {
@@ -95,12 +96,13 @@ svg {
     paint-order: stroke fill;
     stroke-width: 3;
     stroke: #0f0f0f;
-    fill-opacity: 0.5;
+    fill-opacity: 0.7;
     transition: stroke-width 200ms;
 }
 
 .map-piece:hover {
-    stroke-width: 6;
+    stroke-width: 10;
+    stroke: white;
 }
 
 
