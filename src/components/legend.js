@@ -25,7 +25,7 @@ export default class Legend extends Component {
     return services;
   }
 
-  makeIcon(letter) { 
+  makeIcon(letter) {
     const getColor = l => ({C: '#a6cee3',
                             I: '#1f78b4',
                             S: '#b2df8a',
@@ -49,7 +49,7 @@ export default class Legend extends Component {
   render() {
     return (
         <div className="Legend">
-         <table className="table">
+         <table className="table table-striped table-dark">
           <tbody>
            {this.makeTable()}
           </tbody>
