@@ -20,7 +20,7 @@ export default class Map extends Component {
       currentLocation: "create",
       portion: undefined,
       projection: undefined,
-      showChange: true
+      showChange: false
     }
   }
 
@@ -135,6 +135,8 @@ export default class Map extends Component {
     .attr("opacity",function(d,i) {
       return 1;
     });
+
+    this.osmMap.flyTo(STARTLOC, MINZOOM, {animate: true, duration: 0.25});
   }
 
   // Set other paths to lower opacity.
