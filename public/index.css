@@ -2,16 +2,12 @@ body {
     background-color: #3f3f3f;
     font-family: 'Lato', sans-serif;
     text-align: center;
-    color: white;
+    color: black;
 }
 
 text {
     font-weight: bold;
     font-size: 24px;
-}
-
-h1.app-title {
-    text-shadow: black 0 0 5px;
 }
 
 h2 {
@@ -22,6 +18,10 @@ h2 {
 svg {
     display: block;
     margin: 0 auto;
+}
+
+.b {
+    font-weight: bold;
 }
 
 .hud-ui {
@@ -38,8 +38,12 @@ svg {
 
 .Timeline svg {
     display: inline;
-    background-color: rgba(35,31,31,.3);
-    box-shadow: 2px 2px rgba(51,51,51,255);
+    background-color: #f8f9fa;
+    stroke-opacity: 0.5;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    bottom: 10px;
+    margin: 20px;
+    padding: 10px;
     height: 125px;
 }
 
@@ -55,7 +59,9 @@ svg {
 }
 
 .card {
-    background-color: rgba(35,31,31,.51);
+    margin: 25px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    background-color: #f8f9fa;
 }
 
 .Map {
@@ -115,11 +121,15 @@ div .cholorpleth {
     height: 100%;
 }
 
+.small text{
+    font-size: 10px;
+}
+
 .infobox {
     text-align: left;
-    background: #2B2F37;
+    background: rgb(255, 255, 255);
     border-color: #262626;
-    color: white;
+    color: rgb(0, 0, 0);
     width: 100%;
     height: 100%;
     height: calc(100vh - 100px);
@@ -130,6 +140,7 @@ div .cholorpleth {
     visibility: visible;
     transition: opacity 500ms, height 500ms, visibility 500ms;
     pointer-events: auto;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
 }
 
 .infobox-hidden {

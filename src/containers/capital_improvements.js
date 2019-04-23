@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import * as d3 from 'd3';
 import Map from '../components/map.js';
 import Legend from '../components/legend.js'
+import HorizontalBarChart from '../components/horizontal_bar_chart.js';
 
 
 export default class CapitalImprovement extends Component {
@@ -64,10 +65,15 @@ export default class CapitalImprovement extends Component {
               </div>
             </div>
             <div className="col-6 spacer">
-              <h1 className="app-title">St.Paul Capital Improvements</h1>
+              <h1>St.Paul Capital Improvements</h1>
             </div>
             <div className="col-3">
-              { this.ready() ? <Legend data={this.state.capital_improvement_data} /> : "" }
+              <div className="card">
+                { this.ready() ? <Legend name="legend" data={this.state.capital_improvement_data} /> : "" }
+              </div>
+              <div className="card">
+                { this.ready() ? <HorizontalBarChart name="barChart" width="400" height="400" data={this.state.capital_improvement_data} years={this.state.selectedYear}  /> : "" }
+              </div>
             </div>
           </div>
         </div>
