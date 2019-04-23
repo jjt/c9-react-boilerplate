@@ -4,6 +4,10 @@ import L from 'leaflet';
 
 import Timeline from './timeline.js';
 
+const MAXZOOM = 15;
+const MINZOOM = 13;
+const STARTLOC = [44.94, -93.10];
+
 export default class Map extends Component {
   constructor(props) {
     super(props);
@@ -15,8 +19,8 @@ export default class Map extends Component {
     this.state = {
       currentLocation: "create",
       portion: undefined,
-      projection: undefined
-
+      projection: undefined,
+      showChange: true
     }
   }
 
@@ -32,17 +36,18 @@ export default class Map extends Component {
                 //scrollWheelZoom: false,
                 zoomDelta: 0
               })
-        .setView([44.94, -93.10], 13);
+        .setView(STARTLOC, 13);
 
     /* TODO: Don't use OSM's tile server. It is not intended for this. */
     L.tileLayer('https://a.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.',
-      minZoom: 13,
-      maxZoom: 15
+      minZoom: MINZOOM,
+      maxZoom: MAXZOOM
     }).addTo(osmMap);
 
     let that = this;
-    osmMap.on("zoom", function() { that.updatePointPositions(); });
+    let zoom_handler = function() { that.updatePointPositions(); };
+    osmMap.on("zoom", zoom_handler);
     this.osmMap = osmMap;
 
     this.createMap();
@@ -100,15 +105,17 @@ export default class Map extends Component {
       }
     })
 
-    const colorScale  = d3.scaleLinear().domain([0,min_max[1]])
-    .range(["white", "blue"]);
+    let colors = this.state.showChange ? ["red", "green"] : ["white", "blue"];
+    const colorScale =
+          d3.scaleLinear().domain([0,min_max[1]])
+          .range(colors);
 
     d3.selectAll("#osm-map path")
-      .on("click", function(d,i){
+      .on("click", function (d, i) {
         that.setState({ currentLocation: "select", portion: d, projection:projection });
         that.selectMap(d, projection, that.props.years);
         d3.select("body").on("keydown", function() {
-          if(d3.event.key === "Escape"){
+          if (d3.event.key === "Escape") {
             d3.select(".infobox")
     	      .classed("infobox-hidden", true);
             that.unSelectMap();
@@ -116,7 +123,7 @@ export default class Map extends Component {
           }
         });
       })
-      .attr('fill', function(d,i) {
+      .attr('fill', function (d, i) {
         return colorScale(amountAllocated[i].value)
       });
   }
@@ -151,6 +158,7 @@ export default class Map extends Component {
     g.selectAll('.map-point').remove();
     g.selectAll('.map-text').remove();
 
+    let osmMap = this.osmMap;
     g.selectAll('circle')
       .data(districtPoints)
       .enter().append('circle')
@@ -159,7 +167,7 @@ export default class Map extends Component {
       .attr("fill", function(d,i) {
         return improvementsScale(d.service);
       })
-      .on("click", function(d,i){
+      .on("click", function(d, i) {
         infobox.html("<p> Title: " + d.title + "</p>" +
                      "<p> Department: " + d.department + "</p>" +
                      "<p> Amount: " + formatter.format(d.amount) + "</p>" +
@@ -168,6 +176,9 @@ export default class Map extends Component {
                      "<p> Location: " + d.location + "</p>" +
                      "<p> Description: " + d.description + "</p>")
           .classed("infobox-hidden", false);
+        osmMap.panTo([d.latitude, d.longitude],
+                     {animate: true});
+
       });
     this.updatePointPositions();
   }
@@ -229,6 +240,7 @@ export default class Map extends Component {
         }
       }
     }
+
     return districtAmount;
   }
 
