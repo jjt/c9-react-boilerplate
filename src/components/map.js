@@ -7,6 +7,7 @@ import Timeline from './timeline.js';
 const MAXZOOM = 15;
 const MINZOOM = 13;
 const STARTLOC = [44.94, -93.10];
+const FLYDURATION = 0.6;
 
 export default class Map extends Component {
   constructor(props) {
@@ -47,7 +48,8 @@ export default class Map extends Component {
 
     let that = this;
     let zoom_handler = function() { that.updatePointPositions(); };
-    osmMap.on("zoom", zoom_handler);
+    //osmMap.on("viewreset", zoom_handler);
+    osmMap.on("zoomend", zoom_handler);
     this.osmMap = osmMap;
 
     this.createMap();
@@ -136,7 +138,7 @@ export default class Map extends Component {
       return 1;
     });
 
-    this.osmMap.flyTo(STARTLOC, MINZOOM, {animate: true, duration: 0.25});
+    this.osmMap.flyTo(STARTLOC, MINZOOM, {animate: true, duration: FLYDURATION});
   }
 
   // Set other paths to lower opacity.
@@ -178,8 +180,8 @@ export default class Map extends Component {
                      "<p> Location: " + d.location + "</p>" +
                      "<p> Description: " + d.description + "</p>")
           .classed("infobox-hidden", false);
-        osmMap.panTo([d.latitude, d.longitude],
-                     {animate: true});
+        osmMap.flyTo([d.latitude, d.longitude], MAXZOOM,
+                     {animate: true, duration: FLYDURATION});
 
       });
     this.updatePointPositions();
