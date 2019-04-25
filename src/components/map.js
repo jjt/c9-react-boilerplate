@@ -3,6 +3,7 @@ import * as d3 from 'd3';
 import L from 'leaflet';
 
 import Timeline from './timeline.js';
+import Legend from './legend.js';
 
 const MAXZOOM = 15;
 const MINZOOM = 13;
@@ -17,8 +18,8 @@ export default class Map extends Component {
     this.selectMap = this.selectMap.bind(this);
     this.updateMap = this.updateMap.bind(this);
     this.districtAllocated = this.districtAllocated.bind(this);
+    this.toggleShowChanges = this.toggleShowChanges.bind(this);
     this.state = {
-      currentLocation: "create",
       portion: undefined,
       projection: undefined,
       showChange: false
@@ -58,15 +59,8 @@ export default class Map extends Component {
   componentDidUpdate(prevProps, prevState) {
     if (this.props.years.length !== 0 && (this.props.years[0] !== prevProps.years[0] || this.props.years[1] !== prevProps.years[1])) {
       const years = this.parseYearData(this.props.years);
-      if (this.state.currentLocation === "create") {
-        this.destroyMap();
-        this.createMap(years);
-      } else {
-        if (this.state.currentLocation === "select") {
-          this.selectMap(this.state.portion, this.state.projection, this.props.years);
-        }
-        this.updateMap(years);
-      }
+      this.selectMap(this.state.portion, this.state.projection, this.props.years);
+      this.updateMap(years);
     }
   }
 
@@ -107,21 +101,21 @@ export default class Map extends Component {
       }
     })
 
-    let colors = this.state.showChange ? ["red", "green"] : ["white", "blue"];
+    let colors = this.state.showChange ? ["red", "blue"] : ["white", "blue"];
     const colorScale =
           d3.scaleLinear().domain([0,min_max[1]])
           .range(colors);
 
     d3.selectAll("#osm-map path")
       .on("click", function (d, i) {
-        that.setState({ currentLocation: "select", portion: d, projection:projection });
+        that.setState({ portion: d, projection:projection });
         that.selectMap(d, projection, that.props.years);
         d3.select("body").on("keydown", function() {
           if (d3.event.key === "Escape") {
             d3.select(".infobox")
     	      .classed("infobox-hidden", true);
             that.unSelectMap();
-            that.setState({ currentLocation: "update", portion: undefined, projection:undefined });
+            that.setState({ portion: undefined, projection:undefined});
           }
         });
       })
@@ -133,10 +127,6 @@ export default class Map extends Component {
   unSelectMap() {
     d3.select(".Map svg g").selectAll('.map-point').remove();
     d3.select(".Map svg g").selectAll('.map-text').remove();
-    d3.selectAll('path')
-    .attr("opacity",function(d,i) {
-      return 1;
-    });
 
     this.osmMap.flyTo(STARTLOC, MINZOOM, {animate: true, duration: FLYDURATION});
   }
@@ -289,12 +279,46 @@ export default class Map extends Component {
     }
   }
 
+  toggleShowChanges() {
+    this.setState({ showChange: !this.state.showChange}, () => {
+      const years = this.parseYearData(this.props.years);
+      this.updateMap(years);
+    });
+  }
+
   render() {
     return (
       <div className="Map">
 	<div id="osm-map"></div>
-        <svg viewBox="0 0 900 800" preserveAspectRatio="xMidYMax meet"/>
         <Timeline data={this.props.data} yearSelector={this.props.yearSelector}/>
+        <div className="container-fluid hud-ui">
+          <div className="row">
+            <div className="col-3">
+              <div className="row">
+                <div className="col-12 infobox-container">
+                  <div className="infobox infobox-hidden"></div>
+                </div>
+              </div>
+            </div>
+            <div className="col-6 spacer">
+              <h1 className="app-title">St.Paul Capital Improvements</h1>
+            </div>
+            <div className="col-3">
+              <div className="row">
+                <div className="col-12">
+                  <Legend data={this.props.data} />
+                </div>
+              </div>
+              <div className="row">
+                <div className="col-12">
+                  <button onClick={this.toggleShowChanges}>
+                    View {this.state.showChange ? "total spending" : "change over time"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }

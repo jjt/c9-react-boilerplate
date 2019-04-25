@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import * as d3 from 'd3';
 import Map from '../components/map.js';
-import Legend from '../components/legend.js'
-
 
 export default class CapitalImprovement extends Component {
   constructor(props) {
@@ -54,23 +52,6 @@ export default class CapitalImprovement extends Component {
     return (
       <div className="CapitalImprovement">
         { this.ready() ? (<Map geodata={this.state.district_map} data={this.state.capital_improvement_data} years={this.state.selectedYear} yearSelector={this.selectedYears}/>) : (<p className="loading"> Loading Map Data...</p>) }
-        <div className="container-fluid hud-ui">
-          <div className="row">
-            <div className="col-3">
-              <div className="row">
-                <div className="col-12 infobox-container">
-                  <div className="infobox infobox-hidden"></div>
-                </div>
-              </div>
-            </div>
-            <div className="col-6 spacer">
-              <h1 className="app-title">St.Paul Capital Improvements</h1>
-            </div>
-            <div className="col-3">
-              { this.ready() ? <Legend data={this.state.capital_improvement_data} /> : "" }
-            </div>
-          </div>
-        </div>
       </div>
     );
   }

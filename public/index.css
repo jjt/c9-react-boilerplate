@@ -27,6 +27,16 @@ svg {
 .hud-ui {
     padding: 20px;
     z-index: 100;
+    width: 100vw;
+    height: 100vh;
+}
+
+button, button:hover {
+    pointer-events: auto;
+    background-color: #3f3f3f;
+    border-color: #3f3f3f;
+    color: white;
+    padding: 10px;
 }
 
 .Timeline {
@@ -97,7 +107,7 @@ svg {
     stroke-width: 3;
     stroke: #0f0f0f;
     fill-opacity: 0.7;
-    transition: stroke-width 200ms;
+    transition: fill 0.2s;
 }
 
 .map-piece:hover {
