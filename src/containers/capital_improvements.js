@@ -26,7 +26,7 @@ export default class CapitalImprovement extends Component {
 
   loadData() {
     const that = this;
-    d3.csv("https://raw.githubusercontent.com/davimchun45/datasets/master/capital_budgets_improvements.csv").then(function(data) {
+    d3.csv("https://raw.githubusercontent.com/jackstanek/stpaul-census-tracts/master/Saint%20Paul%20CIB_Location%20Updates%2004.21.19.csv").then(function(data) {
       that.setState({
         capital_improvement_data: data
       });
