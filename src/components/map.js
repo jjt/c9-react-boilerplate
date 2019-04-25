@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import * as d3 from 'd3';
 import L from 'leaflet';
+import regression from 'regression';
 
 import Timeline from './timeline.js';
 import Legend from './legend.js';
@@ -99,11 +100,18 @@ export default class Map extends Component {
       if (d.name !== "Citywide") {
         return d.value;
       }
-    })
+    });
 
-    let colors = this.state.showChange ? ["red", "blue"] : ["white", "blue"];
+    /* Show raw amount rather than change */
+    if (!this.state.showChange) {
+      min_max[0] = 0;
+    } else {
+      min_max.splice(1, 0, 0);
+    }
+
+    let colors = this.state.showChange ? ["red", "white", "green"] : ["white", "blue"];
     const colorScale =
-          d3.scaleLinear().domain([0,min_max[1]])
+          d3.scaleLinear().domain(min_max)
           .range(colors);
 
     d3.selectAll("#osm-map path")
@@ -218,6 +226,9 @@ export default class Map extends Component {
       {name:"1",value:0},{name:"2",value:0},{name:"3",value:0},{name:"4",value:0},{name:"5",value:0},{name:"6",value:0},{name:"7",value:0},{name:"8",value:0},{name:"9",value:0},{name:"10",value:0},{name:"11",value:0},{name:"12",value:0},{name:"13",value:0},{name:"14",value:0},{name:"15",value:0},{name:"16",value:0},{name:"17",value:0},{name:"Citywide",value:0}
     ]
 
+    /* TODO: Probably a better way of doing this */
+    let districtChanges = Array.apply(districtAmount.length, new Array(0));
+
     const map_key = {
       "1":0,"2":1,"3":2,"4":3,"5":4,"6":5,"7":6,"8":7,"9":8,"10":9,"11":10,"12":11,"13":12,"14":13,"15":14,"16":15,"17":16,"Citywide":17,
     }
@@ -229,13 +240,27 @@ export default class Map extends Component {
         if (!isNaN(parseInt(financialData[i].amount))) {
           const index = map_key[districts[c].trim()];
           if (index !== undefined) {
-            districtAmount[index].value += parseInt(financialData[i].amount)/districts.length;
+            if (this.state.showChange) {
+              if (districtChanges[index] === undefined) {
+                districtChanges[index] = [];
+              }
+
+              districtChanges[index].push([financialData[i].year, financialData[i].amount]);
+            } else {
+              districtAmount[index].value += parseInt(financialData[i].amount)/districts.length;
+            }
           }
         }
       }
     }
 
-    return districtAmount;
+    /* Apologies, the rate of change was quickly hacked in. */
+    if (this.state.showChange) {
+      console.log("This runs...");
+      return districtChanges.map((y) => regression.linear(y).gradient);
+    } else {
+      return districtAmount;
+    }
   }
 
   parseDistrict(data, portion) {
