@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import * as d3 from 'd3';
 import Map from '../components/map.js';
+import Legend from '../components/legend.js'
+import HorizontalBarChart from '../components/horizontal_bar_chart.js';
 
 export default class CapitalImprovement extends Component {
   constructor(props) {

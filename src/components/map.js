@@ -5,6 +5,7 @@ import regression from 'regression';
 
 import Timeline from './timeline.js';
 import Legend from './legend.js';
+import HorizontalBarChart from './horizontal_bar_chart.js'
 
 const MAXZOOM = 15;
 const MINZOOM = 13;
@@ -312,17 +313,11 @@ export default class Map extends Component {
               <h1 className="app-title">St.Paul Capital Improvements</h1>
             </div>
             <div className="col-3">
-              <div className="row">
-                <div className="col-12">
-                  <Legend data={this.props.data} />
-                </div>
+              <div className="card">
+                <Legend name="legend" data={this.props.data} />
               </div>
-              <div className="row">
-                <div className="col-12">
-                  <button onClick={this.toggleShowChanges}>
-                    View {this.state.showChange ? "total spending" : "change over time"}
-                  </button>
-                </div>
+              <div className="card">
+                <HorizontalBarChart name="barChart" width="400" height="400" data={this.props.data} years={this.props.years}  />
               </div>
             </div>
           </div>
