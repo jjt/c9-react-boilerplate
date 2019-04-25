@@ -310,7 +310,7 @@ export default class Map extends Component {
               </div>
             </div>
             <div className="col-6 spacer">
-              <h1 className="app-title">St.Paul Capital Improvements</h1>
+              <h1 className="app-title card">St.Paul Capital Improvements</h1>
             </div>
             <div className="col-3">
               <div className="card">
@@ -319,6 +319,9 @@ export default class Map extends Component {
               <div className="card">
                 <HorizontalBarChart name="barChart" width="400" height="400" data={this.props.data} years={this.props.years}  />
               </div>
+              <button className="card" onClick={this.toggleShowChanges}>
+                Show {this.state.showChange ? "total spending" : "change over time"}
+              </button>
             </div>
           </div>
         </div>

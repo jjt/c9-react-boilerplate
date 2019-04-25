@@ -15,6 +15,10 @@ h2 {
     margin: 5px;
 }
 
+h1.app-title {
+    padding: 10px;
+}
+
 svg {
     display: block;
     margin: 0 auto;
@@ -72,6 +76,10 @@ button, button:hover {
     margin: 25px;
     box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
     background-color: #f8f9fa;
+}
+
+button {
+    color: black;
 }
 
 .Map {
