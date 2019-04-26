@@ -11,6 +11,7 @@ const MAXZOOM = 15;
 const MINZOOM = 13;
 const STARTLOC = [44.94, -93.10];
 const FLYDURATION = 0.6;
+const NUMDISTRICTS = 17;
 
 export default class Map extends Component {
   constructor(props) {
@@ -95,13 +96,11 @@ export default class Map extends Component {
     const that = this;
     const projection = d3.geoMercator().fitSize([800, 800], this.props.geodata);
     const data = (years !== undefined) ? years : this.props.data;
-    const amountAllocated = this.districtAllocated(data);
+    const amountAllocated = this.state.showChange ? this.districtChanged(data) : this.districtAllocated(data);
 
-    const min_max = d3.extent(amountAllocated, function(d) {
-      if (d.name !== "Citywide") {
-        return d.value;
-      }
-    });
+    const min_max = d3.extent(amountAllocated,
+                              d => (d !== undefined && d.name !== "Citywide") ?
+                              d.value : 0);
 
     /* Show raw amount rather than change */
     if (!this.state.showChange) {
@@ -122,14 +121,15 @@ export default class Map extends Component {
         d3.select("body").on("keydown", function() {
           if (d3.event.key === "Escape") {
             d3.select(".infobox")
-    	      .classed("infobox-hidden", true);
+              .classed("infobox-hidden", true);
             that.unSelectMap();
             that.setState({ portion: undefined, projection:undefined});
           }
         });
       })
       .attr('fill', function (d, i) {
-        return colorScale(amountAllocated[i].value)
+        let amt = amountAllocated[i];
+        return colorScale(amt !== undefined ? amt.value : 0);
       });
   }
 
@@ -143,8 +143,8 @@ export default class Map extends Component {
   // Set other paths to lower opacity.
   selectMap(portion, projection, year) {
     const improvementsScale = d3.scaleOrdinal()
-      .domain(['Community Facilities', 'Internal Service', 'Streets and Utilities', 'Residential and Economic Development'])
-      .range(['#a6cee3', '#1f78b4', '#b2df8a', '#33a02c']);
+          .domain(['Community Facilities', 'Internal Service', 'Streets and Utilities', 'Residential and Economic Development'])
+          .range(['#a6cee3', '#1f78b4', '#b2df8a', '#33a02c']);
 
     const formatter = new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -196,14 +196,14 @@ export default class Map extends Component {
     // Color Scale
     g.append('g').selectAll("rect")
       .data(heightArr)
-    .enter().append("rect")
-    .attr("x", 820)
-    .attr("y", function(d,i) { return d })
-    .attr("width", 50)
-    .attr("height", 60)
-    .attr("fill", function(d,i) {
-      return heightScale(d);
-    });
+      .enter().append("rect")
+      .attr("x", 820)
+      .attr("y", function(d,i) { return d })
+      .attr("width", 50)
+      .attr("height", 60)
+      .attr("fill", function(d,i) {
+        return heightScale(d);
+      });
 
     const scaleFormatter = d3.format(".2s")
 
@@ -245,6 +245,29 @@ export default class Map extends Component {
     }
 
     return districtAmount;
+  }
+
+  districtChanged(data) {
+    return data.reduce((a, c) => {
+      let dists = c.district.split(",");
+      for (let d of dists) {
+        let i = Number(d);
+        if (!isNaN(i) && Number(c.amount) > 0) {
+          let pair = [Number(c.year), Number(c.amount)];
+          if (a[i - 1] === undefined) {
+            a[i - 1] = [pair];
+          } else {
+            a[i - 1].push(pair);
+          }
+        }
+      }
+      return a;
+    }, []).map((vs, i) => {
+      return {
+        name: String(i + 1),
+        value: regression.linear(vs).equation[0]
+      };
+    });
   }
 
   parseDistrict(data, portion) {
@@ -313,15 +336,15 @@ export default class Map extends Component {
               <h1 className="app-title card">St.Paul Capital Improvements</h1>
             </div>
             <div className="col-3">
+              <button className="card float-right" onClick={this.toggleShowChanges}>
+                Show {this.state.showChange ? "total spending" : "change over time"}
+              </button>
               <div className="card">
                 <Legend name="legend" data={this.props.data} />
               </div>
               <div className="card">
                 <HorizontalBarChart name="barChart" width="400" height="400" data={this.props.data} years={this.props.years}  />
               </div>
-              <button className="card" onClick={this.toggleShowChanges}>
-                Show {this.state.showChange ? "total spending" : "change over time"}
-              </button>
             </div>
           </div>
         </div>
