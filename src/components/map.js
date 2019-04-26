@@ -157,12 +157,20 @@ export default class Map extends Component {
       currency: 'USD',
     });
 
-    const infobox = d3.select(".infobox");
+
     const years = this.parseYearData(year);
     const data = (years !== undefined) ? years : this.props.data;
     const districtPoints = this.parseDistrict(data, portion);
     const map = d3.select("#osm-map");
     let g = map.select('g');
+
+    const infobox = d3.select(".infobox");
+    infobox.html("").classed('infobox-hidden', false);
+    infobox.append('h2').html(portion.properties.name2);
+    infobox.append('ul').selectAll('li')
+      .data(districtPoints)
+      .enter().append('li')
+      .html((d, i) => d.title);
 
     g.selectAll('.map-point').remove();
     g.selectAll('.map-text').remove();
@@ -177,7 +185,7 @@ export default class Map extends Component {
         return improvementsScale(d.service);
       })
       .on("click", function(d, i) {
-        infobox.html("<p> Title: " + d.title + "</p>" +
+        infobox.html("<h2>" + d.title + "</h2>" +
                      "<p> Department: " + d.department + "</p>" +
                      "<p> Amount: " + formatter.format(d.amount) + "</p>" +
                      "<p> District: " + d.district + "</p>" +

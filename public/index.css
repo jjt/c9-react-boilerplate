@@ -146,7 +146,6 @@ div .cholorpleth {
     width: 100%;
     height: calc(100vh - 200px);
     padding: 15px;
-    padding-right: 30px;
     overflow-y: auto;
     box-sizing: content-box;
     visibility: visible;
@@ -159,6 +158,24 @@ div .cholorpleth {
     opacity: 0;
     visibility: hidden;
     height: 0;
+}
+
+.infobox ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.infobox ul li:nth-child(odd) {
+    background-color: lightgray;
+}
+
+.infobox ul li {
+    padding: 5px;
+    cursor: pointer;
+}
+
+.infobox h2 {
+    margin-bottom: 20px;
 }
 
 .hud-ui {
