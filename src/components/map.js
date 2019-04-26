@@ -157,6 +157,19 @@ export default class Map extends Component {
       currency: 'USD',
     });
 
+    let osmMap = this.osmMap;
+    const selectPoint = (d, i) => {
+      infobox.html("<h2>" + d.title + "</h2>" +
+                   "<p> Department: " + d.department + "</p>" +
+                   "<p> Amount: " + formatter.format(d.amount) + "</p>" +
+                   "<p> District: " + d.district + "</p>" +
+                   "<p> Year: " + d.year + "</p>" +
+                   "<p> Location: " + d.location + "</p>" +
+                   "<p> Description: " + d.description + "</p>")
+        .classed("infobox-hidden", false);
+      osmMap.flyTo([d.latitude, d.longitude], MAXZOOM,
+                   {animate: true, duration: FLYDURATION});
+    };
 
     const years = this.parseYearData(year);
     const data = (years !== undefined) ? years : this.props.data;
@@ -170,12 +183,12 @@ export default class Map extends Component {
     infobox.append('ul').selectAll('li')
       .data(districtPoints)
       .enter().append('li')
-      .html((d, i) => d.title);
+      .html((d, i) => d.title)
+      .on("click", selectPoint);
 
     g.selectAll('.map-point').remove();
     g.selectAll('.map-text').remove();
 
-    let osmMap = this.osmMap;
     g.selectAll('circle')
       .data(districtPoints)
       .enter().append('circle')
@@ -184,19 +197,7 @@ export default class Map extends Component {
       .attr("fill", function(d,i) {
         return improvementsScale(d.service);
       })
-      .on("click", function(d, i) {
-        infobox.html("<h2>" + d.title + "</h2>" +
-                     "<p> Department: " + d.department + "</p>" +
-                     "<p> Amount: " + formatter.format(d.amount) + "</p>" +
-                     "<p> District: " + d.district + "</p>" +
-                     "<p> Year: " + d.year + "</p>" +
-                     "<p> Location: " + d.location + "</p>" +
-                     "<p> Description: " + d.description + "</p>")
-          .classed("infobox-hidden", false);
-        osmMap.flyTo([d.latitude, d.longitude], MAXZOOM,
-                     {animate: true, duration: FLYDURATION});
-
-      });
+      .on("click", selectPoint);
     this.updatePointPositions();
   }
 
