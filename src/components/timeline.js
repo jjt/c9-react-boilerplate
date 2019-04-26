@@ -9,7 +9,13 @@ export default class Timeline extends Component {
   }
 
   componentDidMount() {
-      this.timelineScale();
+    this.timelineScale();
+  }
+
+  componentDidUpdate() {
+    if (this.props.yearSelector.length === 0) {
+
+    }
   }
 
   parseTimeLine() {
@@ -21,7 +27,7 @@ export default class Timeline extends Component {
       for (let c = 0; c < timeLine.length; c++) {
         if (timeLine[c].year === parseInt(dataPoint.year) && timeLine[c].service === dataPoint.service) {
           timeLine[c].amount += parseInt(dataPoint.amount);
-        } 
+        }
       }
     }
     return timeLine;
@@ -43,7 +49,7 @@ export default class Timeline extends Component {
     const axis = d3.axisBottom().scale(timeScale).tickFormat(d3.format("d"));
     const svg = d3.select(".Timeline svg");
     const new_g = svg.append("g").attr("transform", "translate(170,0)");
-    
+
     new_g.append("g").attr("transform", "translate(0, 90)").call(axis);
     new_g.selectAll('rect')
       .data(timeData)
@@ -53,14 +59,14 @@ export default class Timeline extends Component {
       .attr('width', 7.5)
       .attr('height', function (d) { return timeRange(d.amount) })
       .attr('fill', function(d) { return improvementsScale(d.service)});
-    
+
     const brush = d3.brushX().extent([[-20, 0], [620, 90]]).on("brush", function() {
         var extent = d3.event.selection.map(timeScale.invert, timeScale);
         extent[0] = parseInt(extent[0]);
         extent[1] = parseInt(extent[1]);
-        that.props.yearSelector(extent);    
+        that.props.yearSelector(extent);
     });
-    
+
     new_g.attr("class", "brush").call(brush);
   }
 

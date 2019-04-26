@@ -22,6 +22,7 @@ export default class Map extends Component {
     this.updateMap = this.updateMap.bind(this);
     this.districtAllocated = this.districtAllocated.bind(this);
     this.toggleShowChanges = this.toggleShowChanges.bind(this);
+    this.clearYearSelection = this.clearYearSelection.bind(this);
     this.state = {
       portion: undefined,
       projection: undefined,
@@ -60,10 +61,14 @@ export default class Map extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (this.props.years.length !== 0 && (this.props.years[0] !== prevProps.years[0] || this.props.years[1] !== prevProps.years[1])) {
-      const years = this.parseYearData(this.props.years);
-      this.selectMap(this.state.portion, this.state.projection, this.props.years);
-      this.updateMap(years);
+    if (this.props.years.length === 0) {
+      this.updateMap();
+    } else {
+      if ((this.props.years[0] !== prevProps.years[0] || this.props.years[1] !== prevProps.years[1])) {
+        const years = this.parseYearData(this.props.years);
+        this.selectMap(this.state.portion, this.state.projection, this.props.years);
+        this.updateMap(years);
+      }
     }
   }
 
@@ -109,7 +114,7 @@ export default class Map extends Component {
       min_max.splice(1, 0, 0);
     }
 
-    let colors = this.state.showChange ? ["red", "white", "green"] : ["white", "blue"];
+    let colors = this.state.showChange ? ["hotpink", "white", "teal"] : ["white", "blue"];
     const colorScale =
           d3.scaleLinear().domain(min_max)
           .range(colors);
@@ -124,6 +129,7 @@ export default class Map extends Component {
               .classed("infobox-hidden", true);
             that.unSelectMap();
             that.setState({ portion: undefined, projection:undefined});
+            that.clearYearSelection();
           }
         });
       })
@@ -318,6 +324,10 @@ export default class Map extends Component {
     });
   }
 
+  clearYearSelection() {
+    this.props.yearSelector([]);
+  }
+
   render() {
     return (
       <div className="Map">
@@ -327,13 +337,23 @@ export default class Map extends Component {
           <div className="row">
             <div className="col-3">
               <div className="row">
-                <div className="col-12 infobox-container">
-                  <div className="infobox infobox-hidden"></div>
+                <div className="col-6">
+                  <button className="card" onClick={this.toggleShowChanges}>
+                    Show {this.state.showChange ? "total spending" : "change over time"}
+                  </button>
                 </div>
+                <div className="col-6">
+                  <button className="card" onClick={this.clearYearSelection}>
+                    Clear timeline selection
+                  </button>
+                </div>
+              </div>
+              <div className="row">
+                <div className="infobox infobox-hidden card"></div>
               </div>
             </div>
             <div className="col-6 spacer">
-              <h1 className="app-title card">St.Paul Capital Improvements</h1>
+              <h1 className="app-title card">Saint Paul Capital Improvements</h1>
             </div>
             <div className="col-3">
               <div className="card">
@@ -342,9 +362,6 @@ export default class Map extends Component {
               <div className="card">
                 <HorizontalBarChart name="barChart" width="400" height="400" data={this.props.data} years={this.props.years}  />
               </div>
-              <button className="card float-right" onClick={this.toggleShowChanges}>
-                Show {this.state.showChange ? "total spending" : "change over time"}
-              </button>
             </div>
           </div>
         </div>
