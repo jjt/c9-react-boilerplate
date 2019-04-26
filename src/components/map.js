@@ -336,15 +336,15 @@ export default class Map extends Component {
               <h1 className="app-title card">St.Paul Capital Improvements</h1>
             </div>
             <div className="col-3">
-              <button className="card float-right" onClick={this.toggleShowChanges}>
-                Show {this.state.showChange ? "total spending" : "change over time"}
-              </button>
               <div className="card">
                 <Legend name="legend" data={this.props.data} />
               </div>
               <div className="card">
                 <HorizontalBarChart name="barChart" width="400" height="400" data={this.props.data} years={this.props.years}  />
               </div>
+              <button className="card float-right" onClick={this.toggleShowChanges}>
+                Show {this.state.showChange ? "total spending" : "change over time"}
+              </button>
             </div>
           </div>
         </div>
