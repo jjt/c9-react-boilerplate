@@ -166,7 +166,7 @@ div .cholorpleth {
 }
 
 .infobox ul li:nth-child(odd) {
-    background-color: lightgray;
+    background-color: powderblue;
 }
 
 .infobox ul li {
@@ -176,6 +176,7 @@ div .cholorpleth {
 
 .infobox h2 {
     margin-bottom: 20px;
+    font-size: 1.5em;
 }
 
 .hud-ui {

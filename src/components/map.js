@@ -65,8 +65,11 @@ export default class Map extends Component {
       this.updateMap();
     } else {
       if ((this.props.years[0] !== prevProps.years[0] || this.props.years[1] !== prevProps.years[1])) {
+        if (this.state.portion !== undefined) {
+          this.selectMap(this.state.portion, this.state.projection, this.props.years);
+        }
+
         const years = this.parseYearData(this.props.years);
-        this.selectMap(this.state.portion, this.state.projection, this.props.years);
         this.updateMap(years);
       }
     }
@@ -179,7 +182,7 @@ export default class Map extends Component {
 
     const infobox = d3.select(".infobox");
     infobox.html("").classed('infobox-hidden', false);
-    infobox.append('h2').html(portion.properties.name2);
+    infobox.append('h2').html(portion !== undefined ? portion.properties.name2 : "");
     infobox.append('ul').selectAll('li')
       .data(districtPoints)
       .enter().append('li')
