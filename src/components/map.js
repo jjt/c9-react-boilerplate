@@ -99,15 +99,21 @@ export default class Map extends Component {
     const data = (years !== undefined) ? years : this.props.data;
     const amountAllocated = this.districtAllocated(data);
 
-    const min_max = d3.extent(amountAllocated, function(d) {
+    const median = d3.median(amountAllocated, function(d){
+      if (d.name !== "Citywide") {
+        return d.value;
+      }
+    });
+    const deviation = d3.deviation(amountAllocated, function(d) {
       if (d.name !== "Citywide") {
         return d.value;
       }
     })
+    const range = [median-2*deviation, median-deviation, median, median+deviation, median+2*deviation]
 
-    let colors = this.state.showChange ? ["red", "green"] : ["white", "blue"];
+    let colors = this.state.showChange ? ["#ef8a62", "#f7f7f7", "#67a9cf"] : ["white", "blue"];
     const colorScale =
-          d3.scaleLinear().domain([0,min_max[1]])
+          d3.scaleLinear().domain(range)
           .range(colors);
 
     d3.selectAll("#osm-map path")
@@ -187,37 +193,6 @@ export default class Map extends Component {
     d3.selectAll("#osm-map path").remove();
   }
 
-  colorScale(g, min_max) {
-    const heightScale = d3.scaleLinear().domain([0, 800]).range(["blue", "white"]);
-    const heightArr = [100, 160, 220, 280, 340, 400, 460, 520, 580, 640];
-    // Color Scale
-    g.append('g').selectAll("rect")
-      .data(heightArr)
-    .enter().append("rect")
-    .attr("x", 820)
-    .attr("y", function(d,i) { return d })
-    .attr("width", 50)
-    .attr("height", 60)
-    .attr("fill", function(d,i) {
-      return heightScale(d);
-    });
-
-    const scaleFormatter = d3.format(".2s")
-
-    g.append("text")
-      .text(scaleFormatter(min_max[1]))
-      .attr("fill", "white")
-      .attr("x", 820)
-      .attr("y", 90);
-
-    g.append("text")
-      .text(scaleFormatter(0))
-      .attr("fill", "white")
-      .attr("x", 830)
-      .attr("y", 730);
-
-  }
-
   districtAllocated(data) {
     // TODO: Redo district amount.
     let districtAmount = [
@@ -288,7 +263,7 @@ export default class Map extends Component {
   render() {
     return (
       <div className="Map">
-	<div id="osm-map"></div>
+	      <div id="osm-map"></div>
         <svg viewBox="0 0 900 800" preserveAspectRatio="xMidYMax meet"/>
         <Timeline data={this.props.data} yearSelector={this.props.yearSelector}/>
       </div>
