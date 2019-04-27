@@ -92,7 +92,7 @@ export default class Map extends Component {
   updatePointPositions() {
     let osmMap = this.osmMap;
     let g = d3.select("#osm-map").select('g');
-    g.selectAll(".map-point")
+    g.selectAll(".map-point, .ping-marker")
       .attr("cx", (d, i) =>
             osmMap.latLngToLayerPoint({lat: d.latitude, lon: d.longitude}).x)
       .attr("cy", (d, i) =>
@@ -143,8 +143,7 @@ export default class Map extends Component {
   }
 
   unSelectMap() {
-    d3.select(".Map svg g").selectAll('.map-point').remove();
-    d3.select(".Map svg g").selectAll('.map-text').remove();
+    d3.selectAll('.map-point, .ping-marker').remove();
 
     this.osmMap.flyTo(STARTLOC, MINZOOM, {animate: true, duration: FLYDURATION});
   }
@@ -161,7 +160,42 @@ export default class Map extends Component {
     });
 
     let osmMap = this.osmMap;
-    const selectPoint = (d, i) => {
+    const create_ping = function(elem, d, i) {
+      /* TODO: this should only work if selected through the map, not
+       * from the list. */
+      let ping_pos = osmMap.latLngToLayerPoint({lat: d.latitude, lon: d.longitude});
+      d3.selectAll(".ping-marker").remove();
+      let ping = d3.select(elem.parentNode)
+          .selectAll(".ping-marker")
+          .data([d]).enter()
+          .append("circle");
+
+      ping.attr("stroke", "black")
+        .attr("stroke-width", 2)
+        .attr("fill", "none")
+        .attr("cx", ping_pos.x)
+        .attr("cy", ping_pos.y)
+        .classed("ping-marker", true);
+
+      ping.append("animate")
+        .attr("attributeName", "r")
+        .attr("begin", "0s")
+        .attr("dur", "1s")
+        .attr("repeatCount", "indefinite")
+        .attr("values", "0; 100")
+        .attr("keySplines", "0.165 0.84 0.44 1")
+        .attr("keyTimes", "0; 1")
+        .attr("calcMode", "spline");
+
+      ping.append("animate")
+        .attr("attributeName", "opacity")
+        .attr("begin", "0s")
+        .attr("dur", "1s")
+        .attr("repeatCount", "indefinite")
+        .attr("values", "1; 0");
+    }
+
+    const selectPoint = function (d, i) {
       infobox.html("<h2>" + d.title + "</h2>" +
                    "<p> Department: " + d.department + "</p>" +
                    "<p> Amount: " + formatter.format(d.amount) + "</p>" +
@@ -172,6 +206,7 @@ export default class Map extends Component {
         .classed("infobox-hidden", false);
       osmMap.flyTo([d.latitude, d.longitude], MAXZOOM,
                    {animate: true, duration: FLYDURATION});
+      create_ping(this, d, i);
     };
 
     const years = this.parseYearData(year);
@@ -189,8 +224,7 @@ export default class Map extends Component {
       .html((d, i) => d.title)
       .on("click", selectPoint);
 
-    g.selectAll('.map-point').remove();
-    g.selectAll('.map-text').remove();
+    g.selectAll('.map-point, .ping-marker').remove();
 
     g.selectAll('circle')
       .data(districtPoints)
