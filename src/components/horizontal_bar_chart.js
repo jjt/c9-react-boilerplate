@@ -126,7 +126,7 @@ export default class HorizontalBarChart extends Component {
 
     const colorScale = d3.scaleOrdinal()
       .domain(['Public Works', 'Parks and Recreation', 'Planning and Economic Development', 'Police', 'Fire & Safety Services', 'Library', 'General Government', 'Safety and Inspections', 'Financial Services', 'Office of Technology', 'Public Art'])
-      .range(['#686c5e', '#b2df8a', '#33a02c', '#1f78b4', '#e31a1c', '#a6cee3', '#fdbf6f', '#ccc9c0', '#FF6700', '#003366', '#0f0f0f']);
+      .range(['#686c5e', '#b2df8a', '#33a02c', '#1f78b4', '#e31a1c', '#a6cee3', '#fdbf6f',  '#FF6700','#003366', '#ccc9c0', '#0f0f0f']);
 
     // Axis
     const axisLeft = d3.axisRight(scaleLeft);
