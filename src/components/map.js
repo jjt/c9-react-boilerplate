@@ -1,12 +1,17 @@
 import React, { Component } from 'react';
 import * as d3 from 'd3';
 import L from 'leaflet';
+import regression from 'regression';
 
 import Timeline from './timeline.js';
+import Legend from './legend.js';
+import HorizontalBarChart from './horizontal_bar_chart.js'
 
 const MAXZOOM = 15;
 const MINZOOM = 13;
 const STARTLOC = [44.94, -93.10];
+const FLYDURATION = 0.6;
+const NUMDISTRICTS = 17;
 
 export default class Map extends Component {
   constructor(props) {
@@ -16,11 +21,12 @@ export default class Map extends Component {
     this.selectMap = this.selectMap.bind(this);
     this.updateMap = this.updateMap.bind(this);
     this.districtAllocated = this.districtAllocated.bind(this);
+    this.toggleShowChanges = this.toggleShowChanges.bind(this);
+    this.clearYearSelection = this.clearYearSelection.bind(this);
     this.state = {
-      currentLocation: "create",
       portion: undefined,
       projection: undefined,
-      showChange: true
+      showChange: false
     }
   }
 
@@ -47,22 +53,23 @@ export default class Map extends Component {
 
     let that = this;
     let zoom_handler = function() { that.updatePointPositions(); };
-    osmMap.on("zoom", zoom_handler);
+    //osmMap.on("viewreset", zoom_handler);
+    osmMap.on("zoomend", zoom_handler);
     this.osmMap = osmMap;
 
     this.createMap();
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (this.props.years.length !== 0 && (this.props.years[0] !== prevProps.years[0] || this.props.years[1] !== prevProps.years[1])) {
-      const years = this.parseYearData(this.props.years);
-      if (this.state.currentLocation === "create") {
-        this.destroyMap();
-        this.createMap(years);
-      } else {
-        if (this.state.currentLocation === "select") {
+    if (this.props.years.length === 0) {
+      this.updateMap();
+    } else {
+      if ((this.props.years[0] !== prevProps.years[0] || this.props.years[1] !== prevProps.years[1])) {
+        if (this.state.portion !== undefined) {
           this.selectMap(this.state.portion, this.state.projection, this.props.years);
         }
+
+        const years = this.parseYearData(this.props.years);
         this.updateMap(years);
       }
     }
@@ -85,7 +92,7 @@ export default class Map extends Component {
   updatePointPositions() {
     let osmMap = this.osmMap;
     let g = d3.select("#osm-map").select('g');
-    g.selectAll(".map-point")
+    g.selectAll(".map-point, .ping-marker")
       .attr("cx", (d, i) =>
             osmMap.latLngToLayerPoint({lat: d.latitude, lon: d.longitude}).x)
       .attr("cy", (d, i) =>
@@ -97,7 +104,7 @@ export default class Map extends Component {
     const that = this;
     const projection = d3.geoMercator().fitSize([800, 800], this.props.geodata);
     const data = (years !== undefined) ? years : this.props.data;
-    const amountAllocated = this.districtAllocated(data);
+    const amountAllocated = this.state.showChange ? this.districtChanged(data) : this.districtAllocated(data);
 
     const median = d3.median(amountAllocated, function(d){
       if (d.name !== "Citywide") {
@@ -118,53 +125,108 @@ export default class Map extends Component {
 
     d3.selectAll("#osm-map path")
       .on("click", function (d, i) {
-        that.setState({ currentLocation: "select", portion: d, projection:projection });
+        that.setState({ portion: d, projection:projection });
         that.selectMap(d, projection, that.props.years);
         d3.select("body").on("keydown", function() {
           if (d3.event.key === "Escape") {
             d3.select(".infobox")
-    	      .classed("infobox-hidden", true);
+              .classed("infobox-hidden", true);
             that.unSelectMap();
-            that.setState({ currentLocation: "update", portion: undefined, projection:undefined });
+            that.setState({ portion: undefined, projection:undefined});
+            that.clearYearSelection();
           }
         });
       })
       .attr('fill', function (d, i) {
-        return colorScale(amountAllocated[i].value)
+        let amt = amountAllocated[i];
+        return colorScale(amt !== undefined ? amt.value : 0);
       });
   }
 
   unSelectMap() {
-    d3.select(".Map svg g").selectAll('.map-point').remove();
-    d3.select(".Map svg g").selectAll('.map-text').remove();
-    d3.selectAll('path')
-    .attr("opacity",function(d,i) {
-      return 1;
-    });
+    d3.selectAll('.map-point, .ping-marker').remove();
+
+    this.osmMap.flyTo(STARTLOC, MINZOOM, {animate: true, duration: FLYDURATION});
   }
 
   // Set other paths to lower opacity.
   selectMap(portion, projection, year) {
     const improvementsScale = d3.scaleOrdinal()
-      .domain(['Community Facilities', 'Internal Service', 'Streets and Utilities', 'Residential and Economic Development'])
-      .range(['#a6cee3', '#1f78b4', '#b2df8a', '#33a02c']);
+          .domain(['Community Facilities', 'Internal Service', 'Streets and Utilities', 'Residential and Economic Development'])
+          .range(['#a6cee3', '#1f78b4', '#b2df8a', '#33a02c']);
 
     const formatter = new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
     });
 
-    const infobox = d3.select(".infobox");
+    let osmMap = this.osmMap;
+    const create_ping = function(elem, d, i) {
+      /* TODO: this should only work if selected through the map, not
+       * from the list. */
+      let ping_pos = osmMap.latLngToLayerPoint({lat: d.latitude, lon: d.longitude});
+      d3.selectAll(".ping-marker").remove();
+      let ping = d3.select(elem.parentNode)
+          .selectAll(".ping-marker")
+          .data([d]).enter()
+          .append("circle");
+
+      ping.attr("stroke", "black")
+        .attr("stroke-width", 2)
+        .attr("fill", "none")
+        .attr("cx", ping_pos.x)
+        .attr("cy", ping_pos.y)
+        .classed("ping-marker", true);
+
+      ping.append("animate")
+        .attr("attributeName", "r")
+        .attr("begin", "0s")
+        .attr("dur", "1s")
+        .attr("repeatCount", "indefinite")
+        .attr("values", "0; 100")
+        .attr("keySplines", "0.165 0.84 0.44 1")
+        .attr("keyTimes", "0; 1")
+        .attr("calcMode", "spline");
+
+      ping.append("animate")
+        .attr("attributeName", "opacity")
+        .attr("begin", "0s")
+        .attr("dur", "1s")
+        .attr("repeatCount", "indefinite")
+        .attr("values", "1; 0");
+    }
+
+    const selectPoint = function (d, i) {
+      infobox.html("<h2>" + d.title + "</h2>" +
+                   "<p> Department: " + d.department + "</p>" +
+                   "<p> Amount: " + formatter.format(d.amount) + "</p>" +
+                   "<p> District: " + d.district + "</p>" +
+                   "<p> Year: " + d.year + "</p>" +
+                   "<p> Location: " + d.location + "</p>" +
+                   "<p> Description: " + d.description + "</p>")
+        .classed("infobox-hidden", false);
+      osmMap.flyTo([d.latitude, d.longitude], MAXZOOM,
+                   {animate: true, duration: FLYDURATION});
+      create_ping(this, d, i);
+    };
+
     const years = this.parseYearData(year);
     const data = (years !== undefined) ? years : this.props.data;
     const districtPoints = this.parseDistrict(data, portion);
     const map = d3.select("#osm-map");
     let g = map.select('g');
 
-    g.selectAll('.map-point').remove();
-    g.selectAll('.map-text').remove();
+    const infobox = d3.select(".infobox");
+    infobox.html("").classed('infobox-hidden', false);
+    infobox.append('h2').html(portion !== undefined ? portion.properties.name2 : "");
+    infobox.append('ul').selectAll('li')
+      .data(districtPoints)
+      .enter().append('li')
+      .html((d, i) => d.title)
+      .on("click", selectPoint);
 
-    let osmMap = this.osmMap;
+    g.selectAll('.map-point, .ping-marker').remove();
+
     g.selectAll('circle')
       .data(districtPoints)
       .enter().append('circle')
@@ -173,19 +235,7 @@ export default class Map extends Component {
       .attr("fill", function(d,i) {
         return improvementsScale(d.service);
       })
-      .on("click", function(d, i) {
-        infobox.html("<p> Title: " + d.title + "</p>" +
-                     "<p> Department: " + d.department + "</p>" +
-                     "<p> Amount: " + formatter.format(d.amount) + "</p>" +
-                     "<p> District: " + d.district + "</p>" +
-                     "<p> Year: " + d.year + "</p>" +
-                     "<p> Location: " + d.location + "</p>" +
-                     "<p> Description: " + d.description + "</p>")
-          .classed("infobox-hidden", false);
-        osmMap.panTo([d.latitude, d.longitude],
-                     {animate: true});
-
-      });
+      .on("click", selectPoint);
     this.updatePointPositions();
   }
 
@@ -217,6 +267,29 @@ export default class Map extends Component {
     }
 
     return districtAmount;
+  }
+
+  districtChanged(data) {
+    return data.reduce((a, c) => {
+      let dists = c.district.split(",");
+      for (let d of dists) {
+        let i = Number(d);
+        if (!isNaN(i) && Number(c.amount) > 0) {
+          let pair = [Number(c.year), Number(c.amount)];
+          if (a[i - 1] === undefined) {
+            a[i - 1] = [pair];
+          } else {
+            a[i - 1].push(pair);
+          }
+        }
+      }
+      return a;
+    }, []).map((vs, i) => {
+      return {
+        name: String(i + 1),
+        value: regression.linear(vs).equation[0]
+      };
+    });
   }
 
   parseDistrict(data, portion) {
@@ -260,12 +333,54 @@ export default class Map extends Component {
     }
   }
 
+  toggleShowChanges() {
+    this.setState({ showChange: !this.state.showChange}, () => {
+      const years = this.parseYearData(this.props.years);
+      this.updateMap(years);
+    });
+  }
+
+  clearYearSelection() {
+    this.props.yearSelector([]);
+  }
+
   render() {
     return (
       <div className="Map">
-	      <div id="osm-map"></div>
-        <svg viewBox="0 0 900 800" preserveAspectRatio="xMidYMax meet"/>
+	<div id="osm-map"></div>
         <Timeline data={this.props.data} yearSelector={this.props.yearSelector}/>
+        <div className="container-fluid hud-ui">
+          <div className="row">
+            <div className="col-3">
+              <div className="row">
+                <div className="col-6">
+                  <button className="card" onClick={this.toggleShowChanges}>
+                    Show {this.state.showChange ? "total spending" : "change over time"}
+                  </button>
+                </div>
+                <div className="col-6">
+                  <button className="card" onClick={this.clearYearSelection}>
+                    Clear timeline selection
+                  </button>
+                </div>
+              </div>
+              <div className="row">
+                <div className="infobox infobox-hidden card"></div>
+              </div>
+            </div>
+            <div className="col-6 spacer">
+              <h1 className="app-title card">Saint Paul Capital Improvements</h1>
+            </div>
+            <div className="col-3">
+              <div className="card">
+                <Legend name="legend" data={this.props.data} />
+              </div>
+              <div className="card">
+                <HorizontalBarChart name="barChart" width="400" height="400" data={this.props.data} years={this.props.years}  />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }

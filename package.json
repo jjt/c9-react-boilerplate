@@ -4,10 +4,11 @@
   "private": true,
   "dependencies": {
     "d3": "5.9.2",
+    "leaflet": "1.4.0",
     "react": "^16.8.4",
     "react-dom": "^16.8.4",
     "react-scripts": "2.1.8",
-    "leaflet": "1.4.0"
+    "regression": "^2.0.1"
   },
   "scripts": {
     "start": "react-scripts start",
