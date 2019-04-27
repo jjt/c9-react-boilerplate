@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import * as d3 from 'd3';
 import Map from '../components/map.js';
 import Legend from '../components/legend.js'
-
+import HorizontalBarChart from '../components/horizontal_bar_chart.js';
 
 export default class CapitalImprovement extends Component {
   constructor(props) {
@@ -26,7 +26,7 @@ export default class CapitalImprovement extends Component {
 
   loadData() {
     const that = this;
-    d3.csv("https://raw.githubusercontent.com/davimchun45/datasets/master/capital_budgets_improvements.csv").then(function(data) {
+    d3.csv("https://raw.githubusercontent.com/jackstanek/stpaul-census-tracts/master/Saint%20Paul%20CIB_Location%20Updates%2004.21.19.csv").then(function(data) {
       that.setState({
         capital_improvement_data: data
       });
@@ -54,23 +54,6 @@ export default class CapitalImprovement extends Component {
     return (
       <div className="CapitalImprovement">
         { this.ready() ? (<Map geodata={this.state.district_map} data={this.state.capital_improvement_data} years={this.state.selectedYear} yearSelector={this.selectedYears}/>) : (<p className="loading"> Loading Map Data...</p>) }
-        <div className="container-fluid hud-ui">
-          <div className="row">
-            <div className="col-3">
-              <div className="row">
-                <div className="col-12 infobox-container">
-                  <div className="infobox infobox-hidden"></div>
-                </div>
-              </div>
-            </div>
-            <div className="col-6 spacer">
-              <h1 className="app-title">St.Paul Capital Improvements</h1>
-            </div>
-            <div className="col-3">
-              { this.ready() ? <Legend data={this.state.capital_improvement_data} /> : "" }
-            </div>
-          </div>
-        </div>
       </div>
     );
   }
