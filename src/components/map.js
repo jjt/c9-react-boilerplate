@@ -105,22 +105,34 @@ export default class Map extends Component {
     const projection = d3.geoMercator().fitSize([800, 800], this.props.geodata);
     const data = (years !== undefined) ? years : this.props.data;
     const amountAllocated = this.state.showChange ? this.districtChanged(data) : this.districtAllocated(data);
+    
+    const min_max = d3.extent(amountAllocated,
+      d => (d !== undefined && d.name !== "Citywide") ?
+      d.value : 0);
+    
+    if (!this.state.showChange) {
+      min_max[0] = 0;
+    } else {
+      min_max.splice(1, 0, 0);
+    }
 
-    const median = d3.median(amountAllocated, function(d){
-      if (d.name !== "Citywide") {
-        return d.value;
-      }
-    });
-    const deviation = d3.deviation(amountAllocated, function(d) {
-      if (d.name !== "Citywide") {
-        return d.value;
-      }
-    })
-    const range = [median-2*deviation, median-deviation, median, median+deviation, median+2*deviation]
+    // const median = d3.median(amountAllocated, function(d){
+    //   if (d.name !== "Citywide") {
+    //     return d.value;
+    //   }
+    // });
+    // const deviation = d3.deviation(amountAllocated, function(d) {
+    //   if (d.name !== "Citywide") {
+    //     return d.value;
+    //   }
+    // })
+    // const range = [median-2*deviation, median-deviation, median, median+deviation, median+2*deviation]
 
-    let colors = this.state.showChange ? ["#ca0020", "#f4a582", "#f7f7f7", "#92c5de", "#0571b0"] : ["white", "blue"];
+    // let colors = this.state.showChange ? ["#ca0020", "#f4a582", "#f7f7f7", "#92c5de", "#0571b0"] : ["white", "blue"];
+    let colors = this.state.showChange ? ["hotpink", "white", "teal"] : ["white", "blue"];
+
     const colorScale =
-          d3.scaleLinear().domain(range)
+          d3.scaleLinear().domain(min_max)
           .range(colors);
 
     d3.selectAll("#osm-map path")

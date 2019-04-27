@@ -126,7 +126,7 @@ export default class HorizontalBarChart extends Component {
 
     const colorScale = d3.scaleOrdinal()
       .domain(['Public Works', 'Parks and Recreation', 'Planning and Economic Development', 'Police', 'Fire & Safety Services', 'Library', 'General Government', 'Safety and Inspections', 'Financial Services', 'Office of Technology', 'Public Art'])
-      .range(['#a6cee3', '#b2df8a', '#33a02c', '#1f78b4', '#e31a1c', '#fdbf6f']);
+      .range(['#686c5e', '#b2df8a', '#33a02c', '#1f78b4', '#e31a1c', '#a6cee3', '#fdbf6f', '#ccc9c0', '#FF6700', '#003366', '#0f0f0f']);
 
     // Axis
     const axisLeft = d3.axisRight(scaleLeft);
@@ -153,7 +153,7 @@ export default class HorizontalBarChart extends Component {
       .append("rect")
       .attr("y", (d,i) => margin / 2 +  scaleLeft(departmentSum[i].name))
       .attr("x", margin * 2)
-      .style("fill", (d,i) =>  { return colorScale(i); })
+      .style("fill", (d,i) =>  { return colorScale(d.name); })
       .attr("width", (d,i) => scaleTop(departmentSum[i].value) - margin)
       .attr("height", 10);
     
