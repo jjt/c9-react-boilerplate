@@ -111,7 +111,7 @@ export default class Map extends Component {
     })
     const range = [median-2*deviation, median-deviation, median, median+deviation, median+2*deviation]
 
-    let colors = this.state.showChange ? ["#ef8a62", "#f7f7f7", "#67a9cf"] : ["white", "blue"];
+    let colors = this.state.showChange ? ["#ca0020", "#f4a582", "#f7f7f7", "#92c5de", "#0571b0"] : ["white", "blue"];
     const colorScale =
           d3.scaleLinear().domain(range)
           .range(colors);

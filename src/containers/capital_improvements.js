@@ -69,7 +69,7 @@ export default class CapitalImprovement extends Component {
             </div>
             <div className="col-3">
               <div className="card">
-                { this.ready() ? <Legend name="legend" data={this.state.capital_improvement_data} /> : "" }
+                { this.ready() ? <Legend name="legend" data={this.state.capital_improvement_data} years={this.state.selectedYear} /> : "" }
               </div>
               <div className="card">
                 { this.ready() ? <HorizontalBarChart name="barChart" width="400" height="400" data={this.state.capital_improvement_data} years={this.state.selectedYear}  /> : "" }
