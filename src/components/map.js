@@ -348,7 +348,7 @@ export default class Map extends Component {
     return (
       <div className="Map">
 	<div id="osm-map"></div>
-        <Timeline data={this.props.data} yearSelector={this.props.yearSelector}/>
+        <Timeline data={this.props.data} yearSelector={this.props.yearSelector} selectedYears={this.props.years}/>
         <div className="container-fluid hud-ui">
           <div className="row">
             <div className="col-3">

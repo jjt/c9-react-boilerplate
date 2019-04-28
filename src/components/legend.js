@@ -158,8 +158,6 @@ export default class Legend extends Component {
       min_max[0] = 0;
     }
 
-    console.log(min_max);
-
     let colors = this.props.changed ? ["#ca0020", "#f4a582", "#f7f7f7", "#92c5de", "#0571b0"] : ["#eff3ff", "#bdd7e7", "#6baed6", "#3182bd", "#08519c"];
     const widthScale = d3.scaleLinear().domain([0, 45, 90, 135, 180]).range(colors);
 

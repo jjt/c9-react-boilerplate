@@ -13,8 +13,9 @@ export default class Timeline extends Component {
   }
 
   componentDidUpdate() {
-    if (this.props.yearSelector.length === 0) {
-
+    if (this.props.selectedYears.length === 0) {
+      this.removeTimeline();
+      this.timelineScale();
     }
   }
 
@@ -31,6 +32,11 @@ export default class Timeline extends Component {
       }
     }
     return timeLine;
+  }
+
+  removeTimeline() {
+    const svg = d3.select(".Timeline svg");
+    svg.selectAll("g").remove();
   }
 
   timelineScale() {
