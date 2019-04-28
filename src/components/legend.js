@@ -8,7 +8,7 @@ export default class Legend extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (this.props.changed !== prevProps.changed) {
+    if (this.props.changed !== prevProps.changed || this.props.years !== prevProps.years) {
       this.removeLegend();
       this.createLegend();
     }
@@ -156,17 +156,21 @@ export default class Legend extends Component {
     
     if (!this.props.changed) {
       min_max[0] = 0;
-    } else {
-      min_max.splice(1, 0, 0);
     }
+
+    console.log(min_max);
 
     let colors = this.props.changed ? ["#ca0020", "#f4a582", "#f7f7f7", "#92c5de", "#0571b0"] : ["#eff3ff", "#bdd7e7", "#6baed6", "#3182bd", "#08519c"];
     const widthScale = d3.scaleLinear().domain([0, 45, 90, 135, 180]).range(colors);
 
     // Color Scale
-    const colorScale =
-          d3.scaleLinear().domain(min_max)
-          .range(colors);
+    const colorScale = d3.scaleLinear().domain(min_max).range([0, 210]);
+    const axisBottom = d3.axisBottom(colorScale).ticks(6, "s");
+
+    g.append("g")
+    .attr("transform", "translate(" + 45 + ","  + (210 - 2 * 25) + ")")    
+    .attr("class", "small")
+    .call(axisBottom);
 
     g.append('g').selectAll("rect")
     .attr('class', 'cScale')

@@ -373,7 +373,7 @@ export default class Map extends Component {
             </div>
             <div className="col-3">
               <div className="card">
-                <Legend name="legend" data={this.props.data} changed={this.state.showChange}/>
+                <Legend name="legend" data={this.props.data} years={this.props.years} changed={this.state.showChange}/>
               </div>
               <div className="card">
                 <HorizontalBarChart name="barChart" width="400" height="400" data={this.props.data} years={this.props.years}  />
