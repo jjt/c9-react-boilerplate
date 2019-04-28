@@ -1,9 +1,22 @@
 import React, { Component } from 'react';
 import * as d3 from "d3";
+import regression from 'regression';
 
 export default class Legend extends Component {
   componentDidMount() {
     this.createLegend();
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.changed !== prevProps.changed) {
+      this.removeLegend();
+      this.createLegend();
+    }
+  }
+
+  removeLegend() {
+    const svg = d3.select("." + this.props.name + " svg");
+    svg.selectAll("g").remove();
   }
 
   createLegend() {
@@ -51,6 +64,29 @@ export default class Legend extends Component {
       .attr("x", margin * 1.2 + 20)
     
     this.colorScale(svg);
+  }
+
+  districtChanged(data) {
+    return data.reduce((a, c) => {
+      let dists = c.district.split(",");
+      for (let d of dists) {
+        let i = Number(d);
+        if (!isNaN(i) && Number(c.amount) > 0) {
+          let pair = [Number(c.year), Number(c.amount)];
+          if (a[i - 1] === undefined) {
+            a[i - 1] = [pair];
+          } else {
+            a[i - 1].push(pair);
+          }
+        }
+      }
+      return a;
+    }, []).map((vs, i) => {
+      return {
+        name: String(i + 1),
+        value: regression.linear(vs).equation[0]
+      };
+    });
   }
 
   districtAllocated(data) {
@@ -109,28 +145,27 @@ export default class Legend extends Component {
   }
 
   colorScale(g) {
-    const widthScale = d3.scaleLinear().domain([0, 45, 90, 135, 180]).range(["#ca0020", "#f4a582", "#f7f7f7", "#92c5de", "#0571b0"]);
     const widthArr = [0, 20, 40, 60, 80, 100, 120, 140, 160, 180];
     const years = this.parseYearData(this.props.years); 
     const data = (years !== undefined) ? years : this.props.data;
-    const amountAllocated = this.districtAllocated(data);
+    const amountAllocated = this.props.changed ? this.districtChanged(data) : this.districtAllocated(data);
+    
+    const min_max = d3.extent(amountAllocated,
+      d => (d !== undefined && d.name !== "Citywide") ?
+      d.value : 0);
+    
+    if (!this.props.changed) {
+      min_max[0] = 0;
+    } else {
+      min_max.splice(1, 0, 0);
+    }
 
-    const median = d3.median(amountAllocated, function(d){
-      if (d.name !== "Citywide") {
-        return d.value;
-      }
-    });
-    const deviation = d3.deviation(amountAllocated, function(d) {
-      if (d.name !== "Citywide") {
-        return d.value;
-      }
-    })
-    const range = [median-2*deviation, median-deviation, median, median+deviation, median+2*deviation]
-    const colors = ["#ef8a62", "#f7f7f7", "#67a9cf"];
+    let colors = this.props.changed ? ["#ca0020", "#f4a582", "#f7f7f7", "#92c5de", "#0571b0"] : ["#eff3ff", "#bdd7e7", "#6baed6", "#3182bd", "#08519c"];
+    const widthScale = d3.scaleLinear().domain([0, 45, 90, 135, 180]).range(colors);
 
     // Color Scale
     const colorScale =
-          d3.scaleLinear().domain(range)
+          d3.scaleLinear().domain(min_max)
           .range(colors);
 
     g.append('g').selectAll("rect")

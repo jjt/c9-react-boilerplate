@@ -116,20 +116,8 @@ export default class Map extends Component {
       min_max.splice(1, 0, 0);
     }
 
-    // const median = d3.median(amountAllocated, function(d){
-    //   if (d.name !== "Citywide") {
-    //     return d.value;
-    //   }
-    // });
-    // const deviation = d3.deviation(amountAllocated, function(d) {
-    //   if (d.name !== "Citywide") {
-    //     return d.value;
-    //   }
-    // })
-    // const range = [median-2*deviation, median-deviation, median, median+deviation, median+2*deviation]
-
-    // let colors = this.state.showChange ? ["#ca0020", "#f4a582", "#f7f7f7", "#92c5de", "#0571b0"] : ["white", "blue"];
-    let colors = this.state.showChange ? ["hotpink", "white", "teal"] : ["white", "blue"];
+  
+    let colors = this.state.showChange ? ["#ca0020", "#f7f7f7", "#0571b0"] : ["#eff3ff", "#08519c"];
 
     const colorScale =
           d3.scaleLinear().domain(min_max)
@@ -385,7 +373,7 @@ export default class Map extends Component {
             </div>
             <div className="col-3">
               <div className="card">
-                <Legend name="legend" data={this.props.data} />
+                <Legend name="legend" data={this.props.data} changed={this.state.showChange}/>
               </div>
               <div className="card">
                 <HorizontalBarChart name="barChart" width="400" height="400" data={this.props.data} years={this.props.years}  />
