@@ -20,9 +20,9 @@ export default class HorizontalBarChart extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (this.exists(this.props.data) && this.props.data.length !== 0) {
-      if (prevProps.data !== this.props.data || prevProps.years !== this.props.years) {
+      if (prevProps.data !== this.props.data || prevProps.years !== this.props.years || this.props.district !== prevProps.district) {
         this.destroyGraph();
-        this.createGraph();
+        this.createGraph(this.props.district);
       }
     }  
   }
@@ -85,15 +85,26 @@ export default class HorizontalBarChart extends Component {
     }
       const years = this.parseYearData(this.props.years);
       const financialData = (years !== undefined) ? years : this.props.data;
+
       for (let i = 0; i < financialData.length; i++) {
         let department = deparmentKey[financialData[i].department];
-
         if (department !== undefined && department !== null) {
             if (!isNaN(parseInt(financialData[i].amount))) {
-                deparmentAmount[department].value += parseInt(financialData[i].amount);
+              if (this.props.district !== undefined) {
+                const district = parseInt(this.props.district);
+                let districts = financialData[i].district.split(",");
+                for (let c = 0; c < districts.length;  c++) {
+                  let index = parseInt(districts[c].trim());
+                  if (index === district) {
+                    deparmentAmount[department].value += parseInt(financialData[i].amount)/districts.length;
+                  }
+                }
+              } else {
+                  deparmentAmount[department].value += parseInt(financialData[i].amount);
+              }
             }
+          }
         }
-      }
 
       deparmentAmount.sort(function(x,y){
         return d3.descending(x.value, y.value);
@@ -102,13 +113,13 @@ export default class HorizontalBarChart extends Component {
       return deparmentAmount;
   }
 
-  createGraph() {
+  createGraph(district) {
     const svg = d3.select("." + this.props.name + " svg");
     const width = this.props.width;
     const height = this.props.height;
     const margin = 30;
 
-    const departmentSum = this.parseSum(this.props.years);
+    const departmentSum = this.parseSum(this.props.years, district);
     const departments = departmentSum.map(function(d) {
         return d.name;
     });

@@ -376,7 +376,7 @@ export default class Map extends Component {
                 <Legend name="legend" data={this.props.data} years={this.props.years} changed={this.state.showChange}/>
               </div>
               <div className="card">
-                <HorizontalBarChart name="barChart" width="400" height="400" data={this.props.data} years={this.props.years}  />
+                <HorizontalBarChart name="barChart" width="400" height="400" data={this.props.data} years={this.props.years} district={this.state.portion !== undefined ? this.state.portion.properties.district : undefined} />
               </div>
             </div>
           </div>
